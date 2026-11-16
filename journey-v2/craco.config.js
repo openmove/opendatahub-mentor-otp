@@ -207,6 +207,19 @@ module.exports = {
             )
           }
         ),
+        // The vendor mobile screens import the upstream default-map directly
+        // instead of using the one from the app context, so mobile would show
+        // the upstream layers and controls. Point them at the app's own map.
+        new webpack.NormalModuleReplacementPlugin(
+          /(^|\/)(map\/)?default-map$/,
+          (resource) => {
+            if (!resource.context.includes('otp-react-redux')) return
+            resource.request = path.resolve(
+              __dirname,
+              'lib/app/components/map/default-map'
+            )
+          }
+        ),
         // Route the vendor imports of actions/apiV2 to our module, which moves
         // single calls from OTP GraphQL to OJP. Only the relative requests made
         // inside the vendor code match: our module imports the original through
