@@ -55,6 +55,7 @@ import AppMenu from './app-menu'
 const { isMobile } = coreUtils.ui
 
 const routes = [...webAppRoutes, ...printRoutes]
+const onboardingCompletedKey = 'onboardingCompleted'
 
 class NoiResponsiveWebapp extends Component {
   static propTypes = {
@@ -436,6 +437,15 @@ class RouterWrapperWithAuth0 extends Component {
                 <Switch>
                   {/* Route viewer is disabled */}
                   <Redirect from="/route" to="/" />
+                  <Route
+                    exact
+                    path="/"
+                    render={({ location }) =>
+                      window.localStorage.getItem(onboardingCompletedKey) === 'true'
+                        ? <WebappWithRouter {...this.props} />
+                        : <Redirect to={{ pathname: '/onboarding', search: location.search }} />
+                    }
+                  />
                   {routes.map((props, index) => {
                     const {
                       getContextComponent,
@@ -463,11 +473,12 @@ class RouterWrapperWithAuth0 extends Component {
                   <Route
                     exact
                     path="/onboarding"
-                    render={({ history }) => (
+                    render={({ history, location }) => (
                       <OnboardingFlow
                         onComplete={async (locale) => {
                           await this.props.setLocale(locale)
-                          history.push('/')
+                          window.localStorage.setItem(onboardingCompletedKey, 'true')
+                          history.replace({ pathname: '/', search: location.search })
                         }}
                         renderMap={() => (
                           <>

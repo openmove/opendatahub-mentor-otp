@@ -670,6 +670,18 @@ language:
       modes:
         airplane: Airplane
     components:
+      Onboarding:
+        headingMobile: |-
+          Ciao, Hi, Hallo,
+          Salut
+        headingDesktop: |-
+          Ciao, Hi,
+          Hallo, Salut
+        logoAlt: Journey Planner - Open Data Hub
+        selectLanguage: Select your language
+        confirmMobile: Yes of course
+        confirmDesktop: Confirm choice
+        progress: Step 1 of 3
       NextFlightSuggestion:
         header: No flight at the selected time
         body: "Next flights from {from} to {to}:"
@@ -712,7 +724,7 @@ language:
 #         give-us-feedback: Donnez votre avis
 #         log-my-commute: Mes trajets verts
 #         traveler-tools: Outils du voyageur
-    name: Italian
+    name: Italiano
     actions:
       callTaker:
         callQuerySaveError: "Errore durante il salvataggio delle richieste di chiamata: {err}"
@@ -875,6 +887,11 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      Onboarding:
+        selectLanguage: Seleziona la lingua
+        confirmMobile: Sì, certo
+        confirmDesktop: Conferma scelta
+        progress: Passaggio 1 di 3
       NextFlightSuggestion:
         header: Nessun volo all'orario selezionato
         body: "Prossimi voli da {from} a {to}:"
@@ -1984,6 +2001,11 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      Onboarding:
+        selectLanguage: Sprache auswählen
+        confirmMobile: Ja, natürlich
+        confirmDesktop: Auswahl bestätigen
+        progress: Schritt 1 von 3
       NextFlightSuggestion:
         header: Kein Flug zur gewählten Zeit
         body: "Nächste Flüge von {from} nach {to}:"
