@@ -49,6 +49,8 @@ import SessionTimeout from '@otp-react-redux/lib/components/app/session-timeout'
 import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import PlanningObserver from './planning-observer'
 import { MainPanelContent } from '@otp-react-redux/lib/actions/ui-constants'
+import OnboardingFlow from '../onboarding/OnboardingFlow'
+import AppMenu from './app-menu'
 
 const { isMobile } = coreUtils.ui
 
@@ -261,15 +263,15 @@ class NoiResponsiveWebapp extends Component {
             <Grid>
               <Row className="main-row">
                 {MainControls && <MainControls />}
-              <Col key="map" className="map-container" md={12} sm={6}>
-                {welcomeOverlay}
-                {MapWindows && <MapWindows />}
-                <Map />
-              </Col>
-            </Row>
-          </Grid>
-          {sessionTimeoutSeconds && <SessionTimeout />}
-        </div>
+                <Col key="map" className="map-container" md={12} sm={6}>
+                  {welcomeOverlay}
+                  {MapWindows && <MapWindows />}
+                  <Map />
+                </Col>
+              </Row>
+            </Grid>
+            {sessionTimeoutSeconds && <SessionTimeout />}
+          </div>
         </PlanningProvider>
       )
     }
@@ -284,20 +286,20 @@ class NoiResponsiveWebapp extends Component {
           <Grid>
             <Row className="main-row">
               <Col key="sidebar" className="sidebar" md={4} sm={6}>
-              <main tabIndex={-1}>
-                <MainPanel />
-              </main>
-            </Col>
-            {MainControls && <MainControls />}
-            <Col key="map" className="map-container" md={8} sm={6}>
-              {welcomeOverlay}
-              {MapWindows && <MapWindows />}
-              <Map />
-            </Col>
-          </Row>
-        </Grid>
-        {sessionTimeoutSeconds && <SessionTimeout />}
-      </div>
+                <main tabIndex={-1}>
+                  <MainPanel />
+                </main>
+              </Col>
+              {MainControls && <MainControls />}
+              <Col key="map" className="map-container" md={8} sm={6}>
+                {welcomeOverlay}
+                {MapWindows && <MapWindows />}
+                <Map />
+              </Col>
+            </Row>
+          </Grid>
+          {sessionTimeoutSeconds && <SessionTimeout />}
+        </div>
       </PlanningProvider>
     )
   }
@@ -407,8 +409,10 @@ class RouterWrapperWithAuth0 extends Component {
       homeTimezone,
       locale,
       localizedMessages,
+      popupContent,
       processSignIn,
       routerConfig,
+      setPopupContent,
       showAccessTokenError,
       showLoginError
     } = this.props
@@ -456,6 +460,28 @@ class RouterWrapperWithAuth0 extends Component {
                       />
                     )
                   })}
+                  <Route
+                    exact
+                    path="/onboarding"
+                    render={({ history }) => (
+                      <OnboardingFlow
+                        onComplete={async (locale) => {
+                          await this.props.setLocale(locale)
+                          history.push('/')
+                        }}
+                        renderMap={() => (
+                          <>
+                            <PopupWrapper
+                              content={popupContent}
+                              hideModal={() => setPopupContent(null)}
+                            />
+                            <AppMenu />
+                            <components.Map />
+                          </>
+                        )}
+                      />
+                    )}
+                  />
                   {/* For any other route, simply return the web app. */}
                   <Route render={() => <WebappWithRouter {...this.props} />} />
                 </Switch>
@@ -497,6 +523,7 @@ const mapStateToWrapperProps = (state) => {
     homeTimezone,
     locale: state.otp.ui.locale,
     localizedMessages: state.otp.ui.localizedMessages,
+    popupContent: state.otp.ui.popup,
     routerConfig: reactRouter
   }
 }
@@ -504,6 +531,7 @@ const mapStateToWrapperProps = (state) => {
 const mapWrapperDispatchToProps = {
   processSignIn: authActions.processSignIn,
   setLocale: uiActions.setLocale,
+  setPopupContent: uiActions.setPopupContent,
   showAccessTokenError: authActions.showAccessTokenError,
   showLoginError: authActions.showLoginError
 }
