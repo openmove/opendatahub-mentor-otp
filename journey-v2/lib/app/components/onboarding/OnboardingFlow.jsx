@@ -7,8 +7,12 @@ import './onboarding.scss'
 
 const desktopQuery = '(min-width: 768px)'
 
-export default function OnboardingFlow({ onComplete, previewStep, renderMap }) {
-    const step = previewStep === '2' ? 2 : previewStep === '3' ? 3 : 1
+export default function OnboardingFlow({ onComplete, onLanguageConfirm, onPosition, renderMap }) {
+    const [step, setStep] = useState(1)
+    const [locationAllowed, setLocationAllowed] = useState(false)
+    const [pending, setPending] = useState(false)
+    const [languageError, setLanguageError] = useState(false)
+    const mounted = useRef(false)
     const isLanguageStep = step === 1
     const languageConfig = useSelector((state) => state.otp.config.language)
     const locale = useSelector((state) => state.otp.ui.locale)
@@ -26,20 +30,61 @@ export default function OnboardingFlow({ onComplete, previewStep, renderMap }) {
     const headingKey = isLanguageStep
         ? (showMap ? 'headingDesktop' : 'headingMobile')
         : (step === 2 ? 'locationQuestion' : 'cookiesQuestion')
-    const confirmationKey = isLanguageStep && showMap ? 'confirmDesktop' : 'confirmMobile'
-    const secondaryKey = step === 2 ? 'locationManual' : 'cookiesDecline'
+    const confirmationKey = step === 3
+        ? 'cookiesAcknowledge'
+        : isLanguageStep && showMap ? 'confirmDesktop' : 'confirmMobile'
     const message = (key) => selectedMessages?.[key] ?? defaultMessages?.[key]
 
     useEffect(() => {
+        mounted.current = true
         const query = window.matchMedia(desktopQuery)
         const update = () => setIsDesktop(query.matches)
         query.addEventListener('change', update)
-        return () => query.removeEventListener('change', update)
+        return () => {
+            mounted.current = false
+            query.removeEventListener('change', update)
+        }
     }, [])
 
     function closeLanguageMenu() {
         setIsLanguageMenuOpen(false)
         trigger.current.focus()
+    }
+
+    function finishLocation(position) {
+        if (!mounted.current) return
+        if (position) onPosition(position)
+        setLocationAllowed(Boolean(position))
+        setPending(false)
+        setStep(3)
+    }
+
+    async function confirmStep() {
+        if (isLanguageStep) {
+            setPending(true)
+            setLanguageError(false)
+            try {
+                await onLanguageConfirm(selectedLanguage)
+                if (mounted.current) setStep(2)
+            } catch {
+                if (mounted.current) setLanguageError(true)
+            } finally {
+                if (mounted.current) setPending(false)
+            }
+        } else if (step === 2) {
+            const geolocation = navigator.geolocation
+            if (!geolocation) {
+                finishLocation()
+                return
+            }
+            setPending(true)
+            geolocation.getCurrentPosition(finishLocation, () => finishLocation(), {
+                enableHighAccuracy: true,
+                timeout: 10000
+            })
+        } else {
+            onComplete(locationAllowed)
+        }
     }
 
     return (
@@ -101,6 +146,7 @@ export default function OnboardingFlow({ onComplete, previewStep, renderMap }) {
                             </div>
                         </>
                     )}
+                    {isLanguageStep && languageError && <p role="alert">{message('languageError')}</p>}
                 </section>
 
                 <footer>
@@ -108,14 +154,21 @@ export default function OnboardingFlow({ onComplete, previewStep, renderMap }) {
                         className="onboarding__continue"
                         type="button"
                         lang={selectedMessages?.[confirmationKey] ? selectedLanguage : 'en-US'}
-                        disabled={!isLanguageStep}
-                        onClick={isLanguageStep ? () => onComplete(selectedLanguage) : undefined}
+                        disabled={pending}
+                        onClick={confirmStep}
                     >
                         {message(confirmationKey)}
                     </button>
                     {!isLanguageStep && (
-                        <button className="onboarding__secondary" type="button" disabled>
-                            {message(secondaryKey)}
+                        <button
+                            className="onboarding__secondary"
+                            type="button"
+                            disabled={pending}
+                            onClick={step === 2
+                                ? () => finishLocation()
+                                : () => onComplete(locationAllowed)}
+                        >
+                            {message(step === 2 ? 'locationManual' : 'cookiesSkip')}
                         </button>
                     )}
                     <div
