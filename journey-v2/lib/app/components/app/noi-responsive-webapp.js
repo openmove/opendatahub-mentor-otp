@@ -475,6 +475,7 @@ class RouterWrapperWithAuth0 extends Component {
                     path="/onboarding"
                     render={({ history, location }) => (
                       <OnboardingFlow
+                        previewStep={new URLSearchParams(location.search).get('step')}
                         onComplete={async (locale) => {
                           await this.props.setLocale(locale)
                           window.localStorage.setItem(onboardingCompletedKey, 'true')

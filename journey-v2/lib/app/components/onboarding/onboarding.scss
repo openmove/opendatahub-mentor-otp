@@ -34,6 +34,12 @@
       font-weight: 600;
       line-height: 28px;
     }
+
+    .onboarding__question {
+      margin: 0;
+      font-size: 24px;
+      line-height: 28px;
+    }
   }
 
   &__select {
@@ -100,16 +106,28 @@
     font-size: 16px;
     font-weight: 600;
 
-    &:hover {
+    &:enabled:hover {
       background: #fff;
       color: #000;
     }
 
-    &:active {
+    &:enabled:active {
       border-color: #393939;
       background: #393939;
       color: #fff;
     }
+  }
+
+  &__secondary {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    background: #fff;
+    color: #000;
+    font-size: 16px;
   }
 
   button:focus-visible {
@@ -132,7 +150,7 @@
       background: #e1e2e4;
     }
 
-    span:first-child {
+    .is-current {
       background: #000;
     }
   }

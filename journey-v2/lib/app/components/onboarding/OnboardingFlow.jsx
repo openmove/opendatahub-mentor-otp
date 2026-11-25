@@ -7,7 +7,9 @@ import './onboarding.scss'
 
 const desktopQuery = '(min-width: 768px)'
 
-export default function OnboardingFlow({ onComplete, renderMap }) {
+export default function OnboardingFlow({ onComplete, previewStep, renderMap }) {
+    const step = previewStep === '2' ? 2 : previewStep === '3' ? 3 : 1
+    const isLanguageStep = step === 1
     const languageConfig = useSelector((state) => state.otp.config.language)
     const locale = useSelector((state) => state.otp.ui.locale)
     const languageOptions = getLanguageOptions(languageConfig)
@@ -21,9 +23,12 @@ export default function OnboardingFlow({ onComplete, renderMap }) {
     const trigger = useRef(null)
     const [isDesktop, setIsDesktop] = useState(() => window.matchMedia(desktopQuery).matches)
     const showMap = isDesktop && renderMap
-    const headingKey = showMap ? 'headingDesktop' : 'headingMobile'
-    const confirmationKey = showMap ? 'confirmDesktop' : 'confirmMobile'
-    const confirmationLocale = selectedMessages?.[confirmationKey] ? selectedLanguage : 'en-US'
+    const headingKey = isLanguageStep
+        ? (showMap ? 'headingDesktop' : 'headingMobile')
+        : (step === 2 ? 'locationQuestion' : 'cookiesQuestion')
+    const confirmationKey = isLanguageStep && showMap ? 'confirmDesktop' : 'confirmMobile'
+    const secondaryKey = step === 2 ? 'locationManual' : 'cookiesDecline'
+    const message = (key) => selectedMessages?.[key] ?? defaultMessages?.[key]
 
     useEffect(() => {
         const query = window.matchMedia(desktopQuery)
@@ -45,10 +50,10 @@ export default function OnboardingFlow({ onComplete, renderMap }) {
                 </header>
 
                 <section className="onboarding__content" aria-labelledby="onboarding-title">
-                    <h1 id="onboarding-title">
-                        {selectedMessages?.[headingKey] ?? defaultMessages?.[headingKey]}
+                    <h1 id="onboarding-title" className={isLanguageStep ? undefined : 'onboarding__question'}>
+                        {message(headingKey)}
                     </h1>
-                    {languageOptions && (
+                    {isLanguageStep && languageOptions && (
                         <>
                             <h2 id="onboarding-language-label">
                                 {selectedMessages?.selectLanguage ?? defaultMessages?.selectLanguage}
@@ -102,19 +107,25 @@ export default function OnboardingFlow({ onComplete, renderMap }) {
                     <button
                         className="onboarding__continue"
                         type="button"
-                        lang={confirmationLocale}
-                        onClick={() => onComplete(selectedLanguage)}
+                        lang={selectedMessages?.[confirmationKey] ? selectedLanguage : 'en-US'}
+                        disabled={!isLanguageStep}
+                        onClick={isLanguageStep ? () => onComplete(selectedLanguage) : undefined}
                     >
-                        {selectedMessages?.[confirmationKey] ?? defaultMessages?.[confirmationKey]}
+                        {message(confirmationKey)}
                     </button>
+                    {!isLanguageStep && (
+                        <button className="onboarding__secondary" type="button" disabled>
+                            {message(secondaryKey)}
+                        </button>
+                    )}
                     <div
                         className="onboarding__progress"
                         role="img"
-                        aria-label={selectedMessages?.progress ?? defaultMessages?.progress}
+                        aria-label={message(isLanguageStep ? 'progress' : `progress${step}`)}
                     >
-                        <span />
-                        <span />
-                        <span />
+                        {[1, 2, 3].map((index) => (
+                            <span key={index} className={index === step ? 'is-current' : undefined} />
+                        ))}
                     </div>
                 </footer>
             </main>
