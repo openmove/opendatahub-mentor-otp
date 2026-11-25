@@ -167,6 +167,14 @@
   display: grid;
   grid-template-columns: clamp(300px, 25.8vw, 446px) minmax(0, 1fr);
 
+  @media (hover: hover) and (pointer: fine) {
+    .onboarding__select button[aria-pressed]:hover {
+      background: #ebf0e8;
+      color: #4e702d;
+      cursor: pointer;
+    }
+  }
+
   .onboarding {
     border-right: 1px solid #e3e4e7;
 
