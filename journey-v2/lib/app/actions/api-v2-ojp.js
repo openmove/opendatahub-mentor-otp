@@ -711,16 +711,16 @@ const OTP_TRANSIT_MODES_TO_OJP = {
 /**
  * The public transport searches go to the OJP TripRequest (#342): transit
  * modes with walking, and transit modes with bicycle (GraphQL rejects the
- * latter: the server has no BICYCLE transfer profile). The other combinations
+ * latter: the server has no BICYCLE transfer profile). Wheelchair searches go
+ * too, as LevelEntrance (see ojpPlanQueryAction). The other combinations
  * (walk or bicycle alone, rentals, car, park and ride), transit modes without
- * an OJP equivalent and the options the OTP OJP API ignores (wheelchair,
- * banned or unpreferred routes and trips, checked on the test server) stay on
- * GraphQL: walk and bicycle alone need turn-by-turn steps, and OTP returns no
+ * an OJP equivalent and the options the OTP OJP API ignores (banned or
+ * unpreferred routes and trips, checked on the test server) stay on GraphQL:
+ * walk and bicycle alone need turn-by-turn steps, and OTP returns no
  * PathGuidance.
  */
 function isOjpCombination(combo) {
-  const { banned, modes, modeSettings, unpreferred } = combo
-  const wheelchair = modeSettings?.find((ms) => ms.key === 'wheelchair')?.value
+  const { banned, modes, unpreferred } = combo
   return (
     modes.every(
       ({ mode, qualifier }) =>
@@ -730,7 +730,6 @@ function isOjpCombination(combo) {
           !!OTP_TRANSIT_MODES_TO_OJP[mode])
     ) &&
     modes.some(({ mode }) => mode !== 'BICYCLE') &&
-    !wheelchair &&
     !banned?.routes &&
     !banned?.trips &&
     !unpreferred?.routes &&
@@ -993,7 +992,19 @@ function toPlanItinerary(trip, places, from, to) {
 function ojpPlanQueryAction(combo, responseAction, errorAction, options) {
   return async function (dispatch, getState) {
     const { config } = getState().otp
-    const { arriveBy, date, from, modes, numItineraries, time, to } = combo
+    const {
+      arriveBy,
+      date,
+      from,
+      modes,
+      modeSettings,
+      numItineraries,
+      time,
+      to
+    } = combo
+    const wheelchair = modeSettings?.find(
+      (ms) => ms.key === 'wheelchair'
+    )?.value
 
     let rewrittenPayload
     try {
@@ -1028,6 +1039,22 @@ function ojpPlanQueryAction(combo, responseAction, errorAction, options) {
             ptMode: ptModes
           }
         ]
+      }
+      // OTP reads NoStairs, LevelEntrance or LevelEntranceOrBoardingAid as
+      // wheelchair routing (#342); one is enough. The SDK has no key for it and
+      // writes the params in key order, so it goes right after the mode filter,
+      // its XSD place before NumberOfResults. On the test server the stops have
+      // no accessibility data and OTP returns no trips, as GraphQL does.
+      if (wheelchair) {
+        const { modeAndModeOfOperationFilter, ...otherParams } =
+          request.payload.params
+        request.payload.params = {
+          modeAndModeOfOperationFilter,
+          // Key order is XML tag order here.
+          // eslint-disable-next-line sort-keys, sort-keys-fix/sort-keys-fix
+          levelEntrance: true,
+          ...otherParams
+        }
       }
       const response = await request.fetchResponse(sdk)
       if (!response.ok) throw response.error
