@@ -4,7 +4,7 @@ import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 
-import { SearchFavoritesContext } from '../../context/search-favorites-context'
+import { favoriteFromSearchFeature, MAX_FAVORITES, SearchFeature, SearchFavoritesContext } from '../../context/search-favorites-context'
 
 const FavoriteButton = styled.button`
   align-self: center;
@@ -22,22 +22,16 @@ const FavoriteButton = styled.button`
     color: #e5a500;
   }
 
+  &[aria-disabled='true'] {
+    color: #666;
+    cursor: default;
+  }
+
   &:focus-visible {
     outline: 2px solid #4e702d;
     outline-offset: -2px;
   }
 `
-
-type SearchFeature = {
-  geometry?: { type: string; coordinates: [number, number] }
-  properties: {
-    gid?: string
-    id?: string | number
-    label?: string
-    layer?: string
-    source?: string
-  }
-}
 
 export default function SearchFavoriteButton({ feature, title }: {
   feature: SearchFeature
@@ -45,15 +39,14 @@ export default function SearchFavoriteButton({ feature, title }: {
 }) {
   const favorites = useContext(SearchFavoritesContext)
   const intl = useIntl()
-  const { gid, id, label, layer, source } = feature.properties
-  const coordinates = feature.geometry?.type === 'Point' ? feature.geometry.coordinates : undefined
-  const key = gid
-    ? JSON.stringify([gid])
-    : JSON.stringify([source, layer, id ?? [coordinates, label ?? title]])
+  const place = favoriteFromSearchFeature(feature, title)
+  if (!favorites || !place) return null
 
-  if (!favorites || (!gid && id == null && !coordinates)) return null
-
-  const saved = favorites.favorites.some((place) => place.key === key)
+  const saved = favorites.favorites.some(({ key }) => key === place.key)
+  const limitReached = !saved && favorites.favorites.length >= MAX_FAVORITES
+  const limitMessage = limitReached
+    ? intl.formatMessage({ id: 'components.SearchFavorites.limit' })
+    : undefined
   const Icon = saved ? FilledStar : EmptyStar
 
   return (
@@ -61,11 +54,15 @@ export default function SearchFavoriteButton({ feature, title }: {
       type="button"
       data-location-option-action
       aria-pressed={saved}
-      aria-label={intl.formatMessage({
+      aria-disabled={limitReached}
+      title={limitMessage}
+      aria-label={limitMessage ?? intl.formatMessage({
         id: 'components.SearchFavorites.toggle',
         defaultMessage: 'Save {name} as a favorite'
       }, { name: title })}
-      onClick={() => favorites.toggleFavorite({ key, name: title, address: label, coordinates })}
+      onClick={() => {
+        if (!limitReached) favorites.toggleFavorite(place)
+      }}
     >
       <Icon size={16} aria-hidden="true" />
     </FavoriteButton>

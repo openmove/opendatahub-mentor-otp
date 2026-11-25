@@ -7,7 +7,32 @@ export type FavoritePlace = {
   coordinates?: [number, number]
 }
 
+export type SearchFeature = {
+  geometry?: { type: string; coordinates: [number, number] }
+  properties: {
+    gid?: string
+    id?: string | number
+    label?: string
+    name?: string
+    layer?: string
+    source?: string
+  }
+}
+
+export function favoriteFromSearchFeature(feature: SearchFeature, title: string): FavoritePlace | null {
+  const { gid, id, label, layer, source } = feature.properties
+  const coordinates = feature.geometry?.type === 'Point' ? feature.geometry.coordinates : undefined
+  if (!gid && id == null && !coordinates) return null
+
+  const key = gid
+    ? JSON.stringify([gid])
+    : JSON.stringify([source, layer, id ?? [coordinates, label ?? title]])
+  return { key, name: title, address: label, coordinates }
+}
+
 const storageKey = 'favoritePlaces'
+export const MAX_FAVORITES = 5
+export type SaveFavoriteResult = 'saved' | 'duplicate' | 'limit'
 
 function readFavorites(): FavoritePlace[] {
   try {
@@ -22,6 +47,8 @@ function readFavorites(): FavoritePlace[] {
 
 export const SearchFavoritesContext = createContext<{
   favorites: FavoritePlace[]
+  saveFavorite: (place: FavoritePlace, previousKey?: string) => SaveFavoriteResult
+  removeFavorite: (key: string) => void
   toggleFavorite: (place: FavoritePlace) => void
 } | null>(null)
 
@@ -29,12 +56,7 @@ export function SearchFavoritesProvider({ children }: { children: React.ReactNod
   const [favorites, setFavorites] = useState(readFavorites)
   const currentFavorites = useRef(favorites)
 
-  function toggleFavorite(place: FavoritePlace) {
-    const current = currentFavorites.current
-    const next = current.some(({ key }) => key === place.key)
-      ? current.filter(({ key }) => key !== place.key)
-      : [...current, place]
-
+  function saveFavorites(next: FavoritePlace[]) {
     currentFavorites.current = next
     setFavorites(next)
     try {
@@ -44,8 +66,31 @@ export function SearchFavoritesProvider({ children }: { children: React.ReactNod
     }
   }
 
+  function removeFavorite(key: string) {
+    saveFavorites(currentFavorites.current.filter((place) => place.key !== key))
+  }
+
+  function saveFavorite(place: FavoritePlace, previousKey?: string): SaveFavoriteResult {
+    const current = currentFavorites.current
+    if (current.some(({ key }) => key === place.key && key !== previousKey)) return 'duplicate'
+    if (!previousKey && current.length >= MAX_FAVORITES) return 'limit'
+
+    saveFavorites(previousKey
+      ? current.map((entry) => entry.key === previousKey ? place : entry)
+      : [...current, place])
+    return 'saved'
+  }
+
+  function toggleFavorite(place: FavoritePlace) {
+    if (currentFavorites.current.some(({ key }) => key === place.key)) {
+      removeFavorite(place.key)
+    } else {
+      saveFavorite(place)
+    }
+  }
+
   return (
-    <SearchFavoritesContext.Provider value={{ favorites, toggleFavorite }}>
+    <SearchFavoritesContext.Provider value={{ favorites, removeFavorite, saveFavorite, toggleFavorite }}>
       {children}
     </SearchFavoritesContext.Provider>
   )

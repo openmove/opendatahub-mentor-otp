@@ -795,6 +795,17 @@ input[type="text"]::-ms-clear {
   padding: 6px 0;
 }
 
+.slide-pane.app-menu-favorites-pane {
+  height: 100%;
+  margin-top: 0;
+
+  .slide-pane__content {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+}
+
 .slide-pane__overlay {
   z-index: 1000;
 }

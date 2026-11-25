@@ -671,6 +671,24 @@ language:
         airplane: Airplane
     components:
       SearchFavorites:
+        limit: "You can save up to 5 favourites."
+        addTitle: "Add"
+        backToFavorites: "Back to favourites"
+        close: "Close"
+        name: "Name"
+        address: "Address"
+        currentLocation: "Use current location"
+        confirm: "Yes of course"
+        searchError: "Address search is unavailable."
+        locationError: "Could not get your current location."
+        duplicate: "This place is already in your favourites."
+        title: "Favourites"
+        back: "Back to menu"
+        remove: "Remove"
+        removePlace: "Remove {name} from favourites"
+        edit: "Edit"
+        add: "Add new"
+        empty: "No favourites yet."
         toggle: "Save {name} as a favorite"
       Onboarding:
         headingMobile: |-
@@ -890,6 +908,24 @@ language:
           plural, =0 {} other {# sec}}"
     components:
       SearchFavorites:
+        limit: "Puoi salvare al massimo 5 preferiti."
+        addTitle: "Aggiungi"
+        backToFavorites: "Torna ai preferiti"
+        close: "Chiudi"
+        name: "Nome"
+        address: "Indirizzo"
+        currentLocation: "Usa la posizione attuale"
+        confirm: "Sì, certo"
+        searchError: "La ricerca degli indirizzi non è disponibile."
+        locationError: "Impossibile ottenere la posizione attuale."
+        duplicate: "Questo luogo è già nei preferiti."
+        title: "Preferiti"
+        back: "Torna al menu"
+        remove: "Rimuovi"
+        removePlace: "Rimuovi {name} dai preferiti"
+        edit: "Modifica"
+        add: "Aggiungi"
+        empty: "Nessun preferito salvato."
         toggle: "Salva {name} nei preferiti"
       Onboarding:
         selectLanguage: Seleziona la lingua
@@ -2006,6 +2042,24 @@ language:
           seconds, plural, =0 {} other {# Sek}}"
     components:
       SearchFavorites:
+        limit: "Du kannst bis zu 5 Favoriten speichern."
+        addTitle: "Hinzufügen"
+        backToFavorites: "Zurück zu den Favoriten"
+        close: "Schließen"
+        name: "Name"
+        address: "Adresse"
+        currentLocation: "Aktuellen Standort verwenden"
+        confirm: "Ja, natürlich"
+        searchError: "Die Adresssuche ist nicht verfügbar."
+        locationError: "Der aktuelle Standort konnte nicht ermittelt werden."
+        duplicate: "Dieser Ort ist bereits in deinen Favoriten."
+        title: "Favoriten"
+        back: "Zurück zum Menü"
+        remove: "Entfernen"
+        removePlace: "{name} aus den Favoriten entfernen"
+        edit: "Bearbeiten"
+        add: "Hinzufügen"
+        empty: "Noch keine Favoriten."
         toggle: "{name} als Favorit speichern"
       Onboarding:
         selectLanguage: Sprache auswählen
