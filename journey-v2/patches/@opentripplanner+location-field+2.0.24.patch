@@ -66,7 +66,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
        onClick: locationSelected,
        title: main,
        subTitle: secondary,
-@@ -591,6 +608,51 @@
+@@ -591,6 +608,55 @@
    const locationSelectedLookup = {}; // maps itemIndex to a location selection handler (for use by the onKeyDown method)
 -
 +
@@ -78,7 +78,11 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
 +    [place.name, place.address].some((value) =>
 +      typeof value === "string" && value.toLocaleLowerCase(intl.locale).includes(query)
 +    )
-+  ) : [];
++  ).sort((first, second) => {
++    const exactMatch = (place) => query !== "" && typeof place.name === "string" &&
++      place.name.trim().toLocaleLowerCase(intl.locale) === query;
++    return Number(exactMatch(second)) - Number(exactMatch(first));
++  }) : [];
 +
 +  if (matchingFavorites.length) {
 +    menuItems.push(_react.default.createElement(S.MenuGroupHeader, {
@@ -120,7 +124,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
 -
 +
    if (showUserSettings) {
-@@ -604,12 +666,12 @@
+@@ -604,12 +670,12 @@
    /* 1) Process geocode search result option(s) */
 -
 +
@@ -138,7 +142,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
 -
 +
      const transitFeaturesPresent = stopFeatures.length > 0 || stationFeatures.length > 0; // Iterate through the geocoder results
-@@ -841,6 +903,12 @@
+@@ -841,6 +907,12 @@
    return /*#__PURE__*/_react.default.createElement(S.InputGroup, {
      className: className,
      onBlur: onBlurFormGroup,
@@ -151,7 +155,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
      role: "group"
    }, /*#__PURE__*/_react.default.createElement(S.DropdownButton, {
      "aria-controls": listBoxId,
-@@ -863,7 +931,7 @@
+@@ -863,7 +935,7 @@
      value: statusMessages
    })), /*#__PURE__*/_react.default.createElement(ItemList // Hide the list from screen readers if no enabled options are shown.
    , {
@@ -276,7 +280,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
        onClick: locationSelected,
        title: main,
        subTitle: secondary,
-@@ -628,6 +645,51 @@
+@@ -628,6 +645,55 @@
    var userLocationRenderData = showUserSettings ? userLocationsAndRecentPlaces.map(function (loc) {
      return getRenderData(loc, setLocation, UserLocationIconComponent, intl);
    }) : [];
@@ -287,7 +291,11 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
 +    [place.name, place.address].some((value) =>
 +      typeof value === "string" && value.toLocaleLowerCase(intl.locale).includes(query)
 +    )
-+  ) : [];
++  ).sort((first, second) => {
++    const exactMatch = (place) => query !== "" && typeof place.name === "string" &&
++      place.name.trim().toLocaleLowerCase(intl.locale) === query;
++    return Number(exactMatch(second)) - Number(exactMatch(first));
++  }) : [];
 +
 +  if (matchingFavorites.length) {
 +    menuItems.push(React.createElement(S.MenuGroupHeader, {
@@ -329,7 +337,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
 -
 +
    if (showUserSettings) {
-@@ -643,8 +705,8 @@
+@@ -643,8 +709,8 @@
    /* 1) Process geocode search result option(s) */
 -
 +
@@ -342,7 +350,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
          otherFeatures = _getFeaturesByCategor2.otherFeatures,
          stationFeatures = _getFeaturesByCategor2.stationFeatures,
          stopFeatures = _getFeaturesByCategor2.stopFeatures; // If no categories of features are returned, this variable is used to
-@@ -884,6 +946,12 @@
+@@ -884,6 +950,12 @@
    return /*#__PURE__*/React.createElement(S.InputGroup, {
      className: className,
      onBlur: onBlurFormGroup,
@@ -355,7 +363,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
      role: "group"
    }, /*#__PURE__*/React.createElement(S.DropdownButton, {
      "aria-controls": listBoxId,
-@@ -906,7 +974,7 @@
+@@ -906,7 +978,7 @@
      value: statusMessages
    })), /*#__PURE__*/React.createElement(ItemList // Hide the list from screen readers if no enabled options are shown.
    , {
