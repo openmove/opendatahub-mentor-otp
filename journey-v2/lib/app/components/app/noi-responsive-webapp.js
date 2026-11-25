@@ -56,6 +56,7 @@ const { isMobile } = coreUtils.ui
 
 const routes = [...webAppRoutes, ...printRoutes]
 const onboardingCompletedKey = 'onboardingCompleted'
+const onboardingLocationAllowedKey = 'onboardingLocationAllowed'
 
 class NoiResponsiveWebapp extends Component {
   static propTypes = {
@@ -152,7 +153,6 @@ class NoiResponsiveWebapp extends Component {
 
   componentDidMount() {
     const {
-      getCurrentPosition,
       handleBackButtonPress,
       initializeModules,
       intl,
@@ -179,11 +179,12 @@ class NoiResponsiveWebapp extends Component {
       }
     }
 
-    if (isMobile()) {
-      // Test location availability on load
-      getCurrentPosition(intl)
-      // Also, watch for changes in position on mobile
-      navigator.geolocation.watchPosition(
+    if (
+      isMobile() &&
+      navigator.geolocation &&
+      window.localStorage.getItem(onboardingLocationAllowedKey) === 'true'
+    ) {
+      this.locationWatch = navigator.geolocation.watchPosition(
         // On success
         (position) => {
           // This object cloning is required to be allowed to read the position info twice
@@ -215,6 +216,7 @@ class NoiResponsiveWebapp extends Component {
   componentWillUnmount() {
     // Remove on back button press listener.
     window.removeEventListener('popstate', this.props.handleBackButtonPress)
+    if (this.locationWatch != null) navigator.geolocation.clearWatch(this.locationWatch)
   }
 
   _hidePopup = () => {
@@ -345,7 +347,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   formChanged: formActions.formChanged,
-  getCurrentPosition: locationActions.getCurrentPosition,
   handleBackButtonPress: uiActions.handleBackButtonPress,
   initializeModules: callTakerActions.initializeModules,
   matchContentToUrl: uiActions.matchContentToUrl,
@@ -475,9 +476,10 @@ class RouterWrapperWithAuth0 extends Component {
                     path="/onboarding"
                     render={({ history, location }) => (
                       <OnboardingFlow
-                        previewStep={new URLSearchParams(location.search).get('step')}
-                        onComplete={async (locale) => {
-                          await this.props.setLocale(locale)
+                        onLanguageConfirm={this.props.setLocale}
+                        onPosition={(position) => this.props.receivedPositionResponse({ position })}
+                        onComplete={(locationAllowed) => {
+                          window.localStorage.setItem(onboardingLocationAllowedKey, String(locationAllowed))
                           window.localStorage.setItem(onboardingCompletedKey, 'true')
                           history.replace({ pathname: '/', search: location.search })
                         }}
@@ -542,6 +544,7 @@ const mapStateToWrapperProps = (state) => {
 
 const mapWrapperDispatchToProps = {
   processSignIn: authActions.processSignIn,
+  receivedPositionResponse: locationActions.receivedPositionResponse,
   setLocale: uiActions.setLocale,
   setPopupContent: uiActions.setPopupContent,
   showAccessTokenError: authActions.showAccessTokenError,

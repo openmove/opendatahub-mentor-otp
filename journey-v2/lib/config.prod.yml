@@ -664,7 +664,9 @@ language:
         locationQuestion: "For optimal performance, may we use your current location?"
         locationManual: "No, I'd rather enter it manually"
         cookiesQuestion: "We use only technical cookies to ensure the best possible experience, may we?"
-        cookiesDecline: "No, thanks"
+        cookiesAcknowledge: "Got it"
+        cookiesSkip: "Skip"
+        languageError: "Could not apply the language. Please try again."
         progress2: "Step 2 of 3"
         progress3: "Step 3 of 3"
         headingMobile: |-
@@ -883,7 +885,9 @@ language:
         locationQuestion: "Per offrirti la migliore esperienza, possiamo usare la tua posizione attuale?"
         locationManual: "No, preferisco inserirla manualmente"
         cookiesQuestion: "Usiamo solo cookie tecnici per offrirti la migliore esperienza possibile. Possiamo usarli?"
-        cookiesDecline: "No, grazie"
+        cookiesAcknowledge: "Ho capito"
+        cookiesSkip: "Salta"
+        languageError: "Impossibile applicare la lingua. Riprova."
         progress2: "Passaggio 2 di 3"
         progress3: "Passaggio 3 di 3"
         selectLanguage: Seleziona la lingua
@@ -2000,7 +2004,9 @@ language:
         locationQuestion: "Dürfen wir deinen aktuellen Standort verwenden, um die App für dich zu verbessern?"
         locationManual: "Nein, ich möchte ihn manuell eingeben"
         cookiesQuestion: "Wir verwenden nur technische Cookies, um dir die bestmögliche Nutzung zu ermöglichen. Dürfen wir sie verwenden?"
-        cookiesDecline: "Nein, danke"
+        cookiesAcknowledge: "Verstanden"
+        cookiesSkip: "Überspringen"
+        languageError: "Die Sprache konnte nicht übernommen werden. Bitte versuche es erneut."
         progress2: "Schritt 2 von 3"
         progress3: "Schritt 3 von 3"
         selectLanguage: Sprache auswählen
