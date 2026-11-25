@@ -10,11 +10,12 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
  
  const LocationField = ({
    addLocationSearch = () => {},
-@@ -384,12 +386,14 @@
+@@ -384,12 +386,15 @@
     */
  
  
-+  const renderGeocodedOptionAction = _react.default.useContext(GeocodedOptionActionContext);
++  const favoriteOptions = _react.default.useContext(GeocodedOptionActionContext);
++  const renderGeocodedOptionAction = favoriteOptions && favoriteOptions.renderFeatureAction;
 +
    const onBlurFormGroup = e => {
      // IE does not use relatedTarget, so this check handles cross-browser support.
@@ -26,7 +27,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
        // Hide the menu and messages, but:
        // - don't remove features,
        //   so that when the component gets focus again later, these features are shown
-@@ -480,9 +484,20 @@
+@@ -480,9 +485,20 @@
          break;
  
        case "Escape":
@@ -48,7 +49,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
        // Any other key pressed: clear active selection
  
        default:
-@@ -561,6 +576,7 @@
+@@ -561,6 +577,7 @@
      classNames.push(`layer-${layer}`); // Create and return the option menu item
  
      return /*#__PURE__*/_react.default.createElement(_options.Option, {
@@ -56,7 +57,7 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
        classes: classNames.join(" "),
        color: layerColorMap[layer],
        icon: operatorIcon || /*#__PURE__*/_react.default.createElement(GeocodedOptionIconComponent, {
-@@ -568,7 +584,7 @@
+@@ -568,7 +585,7 @@
        }),
        id: getOptionId(itemIndex),
        isActive: itemIndex === activeIndex,
@@ -65,7 +66,79 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
        onClick: locationSelected,
        title: main,
        subTitle: secondary,
-@@ -841,6 +857,12 @@
+@@ -591,6 +608,51 @@
+   const locationSelectedLookup = {}; // maps itemIndex to a location selection handler (for use by the onKeyDown method)
+-
++
+   const userLocationRenderData = showUserSettings ? userLocationsAndRecentPlaces.map(loc => (0, _options.getRenderData)(loc, setLocation, UserLocationIconComponent, intl)) : [];
++  const query = (stateValue || "").trim().toLocaleLowerCase(intl.locale);
++  const matchingFavorites = favoriteOptions ? favoriteOptions.favorites.filter((place) =>
++    Array.isArray(place.coordinates) && place.coordinates.length === 2 &&
++    place.coordinates.every(Number.isFinite) &&
++    [place.name, place.address].some((value) =>
++      typeof value === "string" && value.toLocaleLowerCase(intl.locale).includes(query)
++    )
++  ) : [];
++
++  if (matchingFavorites.length) {
++    menuItems.push(_react.default.createElement(S.MenuGroupHeader, {
++      as: headingType,
++      key: "favorite-places-heading"
++    }, _react.default.createElement(_reactIntl.FormattedMessage, {
++      id: "components.SearchFavorites.title",
++      defaultMessage: "Favourites"
++    })));
++
++    matchingFavorites.forEach((place) => {
++      const index = itemIndex++;
++      const [lon, lat] = place.coordinates;
++      const location = { lon, lat, name: place.name };
++      if (place.stopId) {
++        location.id = place.stopId;
++        location.type = "stop";
++      }
++      const select = () => setLocation(location, "SAVED");
++      locationSelectedLookup[index] = select;
++      menuItems.push(_react.default.createElement(_options.Option, {
++        action: favoriteOptions.renderAction(place),
++        id: getOptionId(index),
++        isActive: index === activeIndex,
++        key: "favorite-" + place.key,
++        onClick: select,
++        title: place.name,
++        subTitle: place.address !== place.name ? place.address : undefined
++      }));
++    });
++  }
++
++  const favoriteKeys = new Set(matchingFavorites.map((place) => place.key));
++  const visibleFeatures = favoriteKeys.size ? geocodedFeatures.filter((feature) =>
++    !favoriteKeys.has(favoriteOptions.getFeatureKey(feature, (0, _utils.generateLabel)(feature.properties).main))
++  ) : geocodedFeatures;
++
+   /* 0) Include user saved locations if the typed text contains those locations name. */
+-
++
+   if (showUserSettings) {
+@@ -604,12 +666,12 @@
+   /* 1) Process geocode search result option(s) */
+-
++
+-
++
+-  if (geocodedFeatures.length > 0) {
++  if (visibleFeatures.length > 0) {
+     const {
+       otherFeatures,
+       stationFeatures,
+       stopFeatures
+-    } = getFeaturesByCategoryWithLimit(geocodedFeatures, suggestionCount, sortByDistance, preferredLayers); // If no categories of features are returned, this variable is used to
++    } = getFeaturesByCategoryWithLimit(visibleFeatures, suggestionCount, sortByDistance, preferredLayers); // If no categories of features are returned, this variable is used to
+     // avoid displaying headers
+-
++
+     const transitFeaturesPresent = stopFeatures.length > 0 || stationFeatures.length > 0; // Iterate through the geocoder results
+@@ -841,6 +903,12 @@
    return /*#__PURE__*/_react.default.createElement(S.InputGroup, {
      className: className,
      onBlur: onBlurFormGroup,
@@ -78,6 +151,15 @@ diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_mo
      role: "group"
    }, /*#__PURE__*/_react.default.createElement(S.DropdownButton, {
      "aria-controls": listBoxId,
+@@ -863,7 +931,7 @@
+     value: statusMessages
+   })), /*#__PURE__*/_react.default.createElement(ItemList // Hide the list from screen readers if no enabled options are shown.
+   , {
+-    "aria-hidden": hasNoEnabledOptions || !menuVisible,
++    "aria-hidden": hasNoEnabledOptions || !isExpanded,
+     "aria-label": intl.formatMessage({
+       defaultMessage: "Suggested locations",
+       description: "Text to show as a label for the dropdown list of locations",
 diff --git a/node_modules/@opentripplanner/location-field/lib/options.js b/node_modules/@opentripplanner/location-field/lib/options.js
 --- a/node_modules/@opentripplanner/location-field/lib/options.js
 +++ b/node_modules/@opentripplanner/location-field/lib/options.js
@@ -138,11 +220,12 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
  
  var LocationField = function LocationField(_ref2) {
    var _ref2$addLocationSear = _ref2.addLocationSearch,
-@@ -420,12 +422,14 @@
+@@ -420,12 +422,15 @@
     */
  
  
-+  const renderGeocodedOptionAction = React.useContext(GeocodedOptionActionContext);
++  const favoriteOptions = React.useContext(GeocodedOptionActionContext);
++  const renderGeocodedOptionAction = favoriteOptions && favoriteOptions.renderFeatureAction;
 +
    var onBlurFormGroup = function onBlurFormGroup(e) {
      // IE does not use relatedTarget, so this check handles cross-browser support.
@@ -154,7 +237,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
        // Hide the menu and messages, but:
        // - don't remove features,
        //   so that when the component gets focus again later, these features are shown
-@@ -516,9 +520,20 @@
+@@ -516,9 +521,20 @@
          break;
  
        case "Escape":
@@ -176,7 +259,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
        // Any other key pressed: clear active selection
  
        default:
-@@ -596,6 +611,7 @@
+@@ -596,6 +612,7 @@
      classNames.push("layer-".concat(layer)); // Create and return the option menu item
  
      return /*#__PURE__*/React.createElement(Option, {
@@ -184,7 +267,7 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
        classes: classNames.join(" "),
        color: layerColorMap[layer],
        icon: operatorIcon || /*#__PURE__*/React.createElement(GeocodedOptionIconComponent, {
-@@ -603,7 +619,7 @@
+@@ -603,7 +620,7 @@
        }),
        id: getOptionId(itemIndex),
        isActive: itemIndex === activeIndex,
@@ -193,7 +276,73 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
        onClick: locationSelected,
        title: main,
        subTitle: secondary,
-@@ -884,6 +900,12 @@
+@@ -628,6 +645,51 @@
+   var userLocationRenderData = showUserSettings ? userLocationsAndRecentPlaces.map(function (loc) {
+     return getRenderData(loc, setLocation, UserLocationIconComponent, intl);
+   }) : [];
++  const query = (stateValue || "").trim().toLocaleLowerCase(intl.locale);
++  const matchingFavorites = favoriteOptions ? favoriteOptions.favorites.filter((place) =>
++    Array.isArray(place.coordinates) && place.coordinates.length === 2 &&
++    place.coordinates.every(Number.isFinite) &&
++    [place.name, place.address].some((value) =>
++      typeof value === "string" && value.toLocaleLowerCase(intl.locale).includes(query)
++    )
++  ) : [];
++
++  if (matchingFavorites.length) {
++    menuItems.push(React.createElement(S.MenuGroupHeader, {
++      as: headingType,
++      key: "favorite-places-heading"
++    }, React.createElement(FormattedMessage, {
++      id: "components.SearchFavorites.title",
++      defaultMessage: "Favourites"
++    })));
++
++    matchingFavorites.forEach((place) => {
++      const index = itemIndex++;
++      const [lon, lat] = place.coordinates;
++      const location = { lon, lat, name: place.name };
++      if (place.stopId) {
++        location.id = place.stopId;
++        location.type = "stop";
++      }
++      const select = () => setLocation(location, "SAVED");
++      locationSelectedLookup[index] = select;
++      menuItems.push(React.createElement(Option, {
++        action: favoriteOptions.renderAction(place),
++        id: getOptionId(index),
++        isActive: index === activeIndex,
++        key: "favorite-" + place.key,
++        onClick: select,
++        title: place.name,
++        subTitle: place.address !== place.name ? place.address : undefined
++      }));
++    });
++  }
++
++  const favoriteKeys = new Set(matchingFavorites.map((place) => place.key));
++  const visibleFeatures = favoriteKeys.size ? geocodedFeatures.filter((feature) =>
++    !favoriteKeys.has(favoriteOptions.getFeatureKey(feature, generateLabel(feature.properties).main))
++  ) : geocodedFeatures;
++
+   /* 0) Include user saved locations if the typed text contains those locations name. */
+-
++
+   if (showUserSettings) {
+@@ -643,8 +705,8 @@
+   /* 1) Process geocode search result option(s) */
+-
++
+-
++
+-  if (geocodedFeatures.length > 0) {
+-    var _getFeaturesByCategor2 = getFeaturesByCategoryWithLimit(geocodedFeatures, suggestionCount, sortByDistance, preferredLayers),
++  if (visibleFeatures.length > 0) {
++    var _getFeaturesByCategor2 = getFeaturesByCategoryWithLimit(visibleFeatures, suggestionCount, sortByDistance, preferredLayers),
+         otherFeatures = _getFeaturesByCategor2.otherFeatures,
+         stationFeatures = _getFeaturesByCategor2.stationFeatures,
+         stopFeatures = _getFeaturesByCategor2.stopFeatures; // If no categories of features are returned, this variable is used to
+@@ -884,6 +946,12 @@
    return /*#__PURE__*/React.createElement(S.InputGroup, {
      className: className,
      onBlur: onBlurFormGroup,
@@ -206,6 +355,15 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_mo
      role: "group"
    }, /*#__PURE__*/React.createElement(S.DropdownButton, {
      "aria-controls": listBoxId,
+@@ -906,7 +974,7 @@
+     value: statusMessages
+   })), /*#__PURE__*/React.createElement(ItemList // Hide the list from screen readers if no enabled options are shown.
+   , {
+-    "aria-hidden": hasNoEnabledOptions || !menuVisible,
++    "aria-hidden": hasNoEnabledOptions || !isExpanded,
+     "aria-label": intl.formatMessage({
+       defaultMessage: "Suggested locations",
+       description: "Text to show as a label for the dropdown list of locations",
 diff --git a/node_modules/@opentripplanner/location-field/esm/options.js b/node_modules/@opentripplanner/location-field/esm/options.js
 --- a/node_modules/@opentripplanner/location-field/esm/options.js
 +++ b/node_modules/@opentripplanner/location-field/esm/options.js
@@ -259,11 +417,23 @@ diff --git a/node_modules/@opentripplanner/location-field/esm/options.js b/node_
 diff --git a/node_modules/@opentripplanner/location-field/lib/index.d.ts b/node_modules/@opentripplanner/location-field/lib/index.d.ts
 --- a/node_modules/@opentripplanner/location-field/lib/index.d.ts
 +++ b/node_modules/@opentripplanner/location-field/lib/index.d.ts
-@@ -2,6 +2,7 @@
+@@ -2,6 +2,19 @@
  import * as S from "./styled";
  import { LocationFieldProps } from "./types";
  declare const LocationField: ({ addLocationSearch, autoFocus, className, clearButtonIcon, clearLocation, currentPosition, currentPositionIcon, currentPositionUnavailableIcon, findNearbyStops, GeocodedOptionIconComponent, geocoderConfig, getCurrentPosition, hideExistingValue, initialSearchResults, inputPlaceholder, isRequired, isStatic, isValid, layerColorMap, location, LocationIconComponent, locationType, nearbyStops, onLocationSelected, onTextInputClick, operatorIconMap, preferredLayers, sessionOptionIcon, sessionSearches, showClearButton, showSecondaryLabels, showUserSettings, sortByDistance, stopOptionIcon, stopsIndex, suggestionCount, suggestionHeadingType: headingType, suppressNearby, UserLocationIconComponent, userLocationsAndRecentPlaces }: LocationFieldProps) => React.ReactElement;
-+export declare const GeocodedOptionActionContext: React.Context<((feature: any, title: string) => React.ReactNode) | null>;
++interface FavoriteOption {
++    key: string;
++    name: string;
++    address?: string;
++    coordinates?: [number, number];
++    stopId?: string;
++}
++export declare const GeocodedOptionActionContext: React.Context<{
++    favorites: FavoriteOption[];
++    getFeatureKey: (feature: any, title: string) => string | undefined;
++    renderAction: (place: FavoriteOption) => React.ReactNode;
++    renderFeatureAction: (feature: any, title: string) => React.ReactNode;
++} | null>;
  export default LocationField;
  export { S as Styled };
  //# sourceMappingURL=index.d.ts.map

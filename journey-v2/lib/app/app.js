@@ -19,10 +19,10 @@ import { Utensils } from '@styled-icons/fa-solid/Utensils'
 
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
-import React from 'react'
+import React, { useContext, useMemo } from 'react'
 import { GeocodedOptionActionContext } from '@opentripplanner/location-field'
 import SearchFavoriteButton from './components/app/search-favorite-button'
-import { SearchFavoritesProvider } from './context/search-favorites-context'
+import { favoriteFromSearchFeature, SearchFavoritesContext, SearchFavoritesProvider } from './context/search-favorites-context'
 
 
 // import OTP-RR components
@@ -215,16 +215,31 @@ const components = {
   DefaultMap: DefaultMap
 }
 
-const renderSearchFavorite = (feature, title) => (
-  <SearchFavoriteButton feature={feature} title={title} />
-)
+function SearchFavoriteOptions({ children }) {
+  const { favorites } = useContext(SearchFavoritesContext)
+  const options = useMemo(() => ({
+    favorites,
+    getFeatureKey: (feature, title) => favoriteFromSearchFeature(feature, title)?.key,
+    renderAction: (place) => <SearchFavoriteButton place={place} />,
+    renderFeatureAction: (feature, title) => {
+      const place = favoriteFromSearchFeature(feature, title)
+      return place ? <SearchFavoriteButton place={place} /> : null
+    }
+  }), [favorites])
+
+  return (
+    <GeocodedOptionActionContext.Provider value={options}>
+      {children}
+    </GeocodedOptionActionContext.Provider>
+  )
+}
 
 const Webapp = () => (
   <ErrorBoundary>
     <SearchFavoritesProvider>
-      <GeocodedOptionActionContext.Provider value={renderSearchFavorite}>
+      <SearchFavoriteOptions>
         <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
-      </GeocodedOptionActionContext.Provider>
+      </SearchFavoriteOptions>
     </SearchFavoritesProvider>
   </ErrorBoundary>
 )

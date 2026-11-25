@@ -5,6 +5,7 @@ export type FavoritePlace = {
   name: string
   address?: string
   coordinates?: [number, number]
+  stopId?: string
 }
 
 export type SearchFeature = {
@@ -16,18 +17,21 @@ export type SearchFeature = {
     name?: string
     layer?: string
     source?: string
+    addendum?: { stop?: { gtfsId?: string } }
   }
 }
 
 export function favoriteFromSearchFeature(feature: SearchFeature, title: string): FavoritePlace | null {
-  const { gid, id, label, layer, source } = feature.properties
+  const { addendum, gid, id, label, layer, source } = feature.properties
   const coordinates = feature.geometry?.type === 'Point' ? feature.geometry.coordinates : undefined
   if (!gid && id == null && !coordinates) return null
 
   const key = gid
     ? JSON.stringify([gid])
     : JSON.stringify([source, layer, id ?? [coordinates, label ?? title]])
-  return { key, name: title, address: label, coordinates }
+  const stopId = layer === 'stops' &&
+    (addendum?.stop?.gtfsId || (source === 'otp' && id))
+  return { key, name: title, address: label, coordinates, stopId: stopId ? String(stopId) : undefined }
 }
 
 const storageKey = 'favoritePlaces'

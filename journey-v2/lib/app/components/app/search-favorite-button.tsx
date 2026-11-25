@@ -4,7 +4,7 @@ import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 
-import { favoriteFromSearchFeature, MAX_FAVORITES, SearchFeature, SearchFavoritesContext } from '../../context/search-favorites-context'
+import { FavoritePlace, MAX_FAVORITES, SearchFavoritesContext } from '../../context/search-favorites-context'
 
 const FavoriteButton = styled.button`
   align-self: center;
@@ -33,14 +33,10 @@ const FavoriteButton = styled.button`
   }
 `
 
-export default function SearchFavoriteButton({ feature, title }: {
-  feature: SearchFeature
-  title: string
-}) {
+export default function SearchFavoriteButton({ place }: { place: FavoritePlace }) {
   const favorites = useContext(SearchFavoritesContext)
   const intl = useIntl()
-  const place = favoriteFromSearchFeature(feature, title)
-  if (!favorites || !place) return null
+  if (!favorites) return null
 
   const saved = favorites.favorites.some(({ key }) => key === place.key)
   const limitReached = !saved && favorites.favorites.length >= MAX_FAVORITES
@@ -57,9 +53,8 @@ export default function SearchFavoriteButton({ feature, title }: {
       aria-disabled={limitReached}
       title={limitMessage}
       aria-label={limitMessage ?? intl.formatMessage({
-        id: 'components.SearchFavorites.toggle',
-        defaultMessage: 'Save {name} as a favorite'
-      }, { name: title })}
+        id: saved ? 'components.SearchFavorites.removePlace' : 'components.SearchFavorites.toggle'
+      }, { name: place.name })}
       onClick={() => {
         if (!limitReached) favorites.toggleFavorite(place)
       }}
