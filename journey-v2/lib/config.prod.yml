@@ -660,6 +660,8 @@ language:
       modes:
         airplane: Airplane
     components:
+      SearchFavorites:
+        toggle: "Save {name} as a favorite"
       Onboarding:
         headingMobile: |-
           Ciao, Hi, Hallo,
@@ -873,6 +875,8 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      SearchFavorites:
+        toggle: "Salva {name} nei preferiti"
       Onboarding:
         selectLanguage: Seleziona la lingua
         confirmMobile: Sì, certo
@@ -1984,6 +1988,8 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      SearchFavorites:
+        toggle: "{name} als Favorit speichern"
       Onboarding:
         selectLanguage: Sprache auswählen
         confirmMobile: Ja, natürlich

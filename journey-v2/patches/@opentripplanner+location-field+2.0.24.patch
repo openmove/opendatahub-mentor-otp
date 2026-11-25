@@ -1,0 +1,269 @@
+diff --git a/node_modules/@opentripplanner/location-field/lib/index.js b/node_modules/@opentripplanner/location-field/lib/index.js
+--- a/node_modules/@opentripplanner/location-field/lib/index.js
++++ b/node_modules/@opentripplanner/location-field/lib/index.js
+@@ -134,6 +134,8 @@
+     title: displayName
+   });
+ }
++
++const GeocodedOptionActionContext = exports.GeocodedOptionActionContext = _react.default.createContext(null);
+ 
+ const LocationField = ({
+   addLocationSearch = () => {},
+@@ -384,12 +386,14 @@
+    */
+ 
+ 
++  const renderGeocodedOptionAction = _react.default.useContext(GeocodedOptionActionContext);
++
+   const onBlurFormGroup = e => {
+     // IE does not use relatedTarget, so this check handles cross-browser support.
+     // see https://stackoverflow.com/a/49325196/915811
+     const target = e.relatedTarget !== null ? e.relatedTarget : document.activeElement;
+ 
+-    if (!target || target.getAttribute("role") !== "option") {
++    if (!target || (target.getAttribute("role") !== "option" && !target.closest("[data-location-option-action]"))) {
+       // Hide the menu and messages, but:
+       // - don't remove features,
+       //   so that when the component gets focus again later, these features are shown
+@@ -480,9 +484,20 @@
+         break;
+ 
+       case "Escape":
+-      case "Tab":
+         closeMenu();
+         break;
++
++      case "Tab": {
++        const action = !evt.shiftKey && renderGeocodedOptionAction &&
++          document.getElementById(listBoxId).querySelector("[data-location-option-action]");
++        if (action) {
++          evt.preventDefault();
++          action.focus();
++        } else {
++          closeMenu();
++        }
++        break;
++      }
+       // Any other key pressed: clear active selection
+ 
+       default:
+@@ -561,6 +576,7 @@
+     classNames.push(`layer-${layer}`); // Create and return the option menu item
+ 
+     return /*#__PURE__*/_react.default.createElement(_options.Option, {
++      action: renderGeocodedOptionAction && renderGeocodedOptionAction(feature, main),
+       classes: classNames.join(" "),
+       color: layerColorMap[layer],
+       icon: operatorIcon || /*#__PURE__*/_react.default.createElement(GeocodedOptionIconComponent, {
+@@ -568,7 +584,7 @@
+       }),
+       id: getOptionId(itemIndex),
+       isActive: itemIndex === activeIndex,
+-      key: optionKey++,
++      key: renderGeocodedOptionAction ? "geocoded-" + itemIndex : optionKey++,
+       onClick: locationSelected,
+       title: main,
+       subTitle: secondary,
+@@ -841,6 +857,12 @@
+   return /*#__PURE__*/_react.default.createElement(S.InputGroup, {
+     className: className,
+     onBlur: onBlurFormGroup,
++    onKeyDown: event => {
++      if (event.key === "Escape" && event.target.closest("[data-location-option-action]")) {
++        inputRef.current.focus();
++        closeMenu();
++      }
++    },
+     role: "group"
+   }, /*#__PURE__*/_react.default.createElement(S.DropdownButton, {
+     "aria-controls": listBoxId,
+diff --git a/node_modules/@opentripplanner/location-field/lib/options.js b/node_modules/@opentripplanner/location-field/lib/options.js
+--- a/node_modules/@opentripplanner/location-field/lib/options.js
++++ b/node_modules/@opentripplanner/location-field/lib/options.js
+@@ -64,6 +64,7 @@
+ 
+ const MenuItem = ({
+   active = false,
++  as,
+   children,
+   disabled = false,
+   id,
+@@ -75,6 +76,7 @@
+   AT hear all options - see https://react-spectrum.adobe.com/blog/building-a-combobox.html#voiceover */
+   ,
+   "aria-live": active ? "assertive" : "off",
++  as: as,
+   active: active,
+   id: id,
+   onClick: disabled ? null : onClick,
+@@ -86,6 +88,7 @@
+ exports.MenuItem = MenuItem;
+ 
+ function Option({
++  action,
+   classes = "",
+   color = null,
+   disabled = false,
+@@ -98,7 +101,8 @@
+   subTitle = null,
+   title = null
+ }) {
+-  return /*#__PURE__*/_react.default.createElement(MenuItem, {
++  const option = /*#__PURE__*/_react.default.createElement(MenuItem, {
++    as: action ? "div" : undefined,
+     active: isActive,
+     disabled: disabled,
+     id: id,
+@@ -112,6 +116,10 @@
+   }, icon), /*#__PURE__*/_react.default.createElement(S.OptionContent, null, title, subTitle && /*#__PURE__*/_react.default.createElement(S.OptionSubTitle, null, /*#__PURE__*/_react.default.createElement(S.HiddenContent, null, ", "), subTitle), showSecondaryLabels && (secondaryLabels === null || secondaryLabels === void 0 ? void 0 : secondaryLabels.slice(0, 5).map((label, idx) => /*#__PURE__*/_react.default.createElement(S.OptionAltLabel, {
+     key: idx
+   }, /*#__PURE__*/_react.default.createElement(S.HiddenContent, null, ", "), label))))));
++  return action ? _react.default.createElement("li", {
++    role: "presentation",
++    style: { display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto" }
++  }, option, action) : option;
+ }
+ 
+ function TransitStopOption({
+diff --git a/node_modules/@opentripplanner/location-field/esm/index.js b/node_modules/@opentripplanner/location-field/esm/index.js
+--- a/node_modules/@opentripplanner/location-field/esm/index.js
++++ b/node_modules/@opentripplanner/location-field/esm/index.js
+@@ -106,6 +106,8 @@
+     title: displayName
+   });
+ }
++
++export const GeocodedOptionActionContext = React.createContext(null);
+ 
+ var LocationField = function LocationField(_ref2) {
+   var _ref2$addLocationSear = _ref2.addLocationSearch,
+@@ -420,12 +422,14 @@
+    */
+ 
+ 
++  const renderGeocodedOptionAction = React.useContext(GeocodedOptionActionContext);
++
+   var onBlurFormGroup = function onBlurFormGroup(e) {
+     // IE does not use relatedTarget, so this check handles cross-browser support.
+     // see https://stackoverflow.com/a/49325196/915811
+     var target = e.relatedTarget !== null ? e.relatedTarget : document.activeElement;
+ 
+-    if (!target || target.getAttribute("role") !== "option") {
++    if (!target || (target.getAttribute("role") !== "option" && !target.closest("[data-location-option-action]"))) {
+       // Hide the menu and messages, but:
+       // - don't remove features,
+       //   so that when the component gets focus again later, these features are shown
+@@ -516,9 +520,20 @@
+         break;
+ 
+       case "Escape":
+-      case "Tab":
+         closeMenu();
+         break;
++
++      case "Tab": {
++        const action = !evt.shiftKey && renderGeocodedOptionAction &&
++          document.getElementById(listBoxId).querySelector("[data-location-option-action]");
++        if (action) {
++          evt.preventDefault();
++          action.focus();
++        } else {
++          closeMenu();
++        }
++        break;
++      }
+       // Any other key pressed: clear active selection
+ 
+       default:
+@@ -596,6 +611,7 @@
+     classNames.push("layer-".concat(layer)); // Create and return the option menu item
+ 
+     return /*#__PURE__*/React.createElement(Option, {
++      action: renderGeocodedOptionAction && renderGeocodedOptionAction(feature, main),
+       classes: classNames.join(" "),
+       color: layerColorMap[layer],
+       icon: operatorIcon || /*#__PURE__*/React.createElement(GeocodedOptionIconComponent, {
+@@ -603,7 +619,7 @@
+       }),
+       id: getOptionId(itemIndex),
+       isActive: itemIndex === activeIndex,
+-      key: optionKey++,
++      key: renderGeocodedOptionAction ? "geocoded-" + itemIndex : optionKey++,
+       onClick: locationSelected,
+       title: main,
+       subTitle: secondary,
+@@ -884,6 +900,12 @@
+   return /*#__PURE__*/React.createElement(S.InputGroup, {
+     className: className,
+     onBlur: onBlurFormGroup,
++    onKeyDown: event => {
++      if (event.key === "Escape" && event.target.closest("[data-location-option-action]")) {
++        inputRef.current.focus();
++        closeMenu();
++      }
++    },
+     role: "group"
+   }, /*#__PURE__*/React.createElement(S.DropdownButton, {
+     "aria-controls": listBoxId,
+diff --git a/node_modules/@opentripplanner/location-field/esm/options.js b/node_modules/@opentripplanner/location-field/esm/options.js
+--- a/node_modules/@opentripplanner/location-field/esm/options.js
++++ b/node_modules/@opentripplanner/location-field/esm/options.js
+@@ -30,6 +30,7 @@
+ export var MenuItem = function MenuItem(_ref2) {
+   var _ref2$active = _ref2.active,
+       active = _ref2$active === void 0 ? false : _ref2$active,
++      as = _ref2.as,
+       children = _ref2.children,
+       _ref2$disabled = _ref2.disabled,
+       disabled = _ref2$disabled === void 0 ? false : _ref2$disabled,
+@@ -43,6 +44,7 @@
+     AT hear all options - see https://react-spectrum.adobe.com/blog/building-a-combobox.html#voiceover */
+     ,
+     "aria-live": active ? "assertive" : "off",
++    as: as,
+     active: active,
+     id: id,
+     onClick: disabled ? null : onClick,
+@@ -52,7 +54,8 @@
+   }, children);
+ };
+ export function Option(_ref3) {
+-  var _ref3$classes = _ref3.classes,
++  var action = _ref3.action,
++      _ref3$classes = _ref3.classes,
+       classes = _ref3$classes === void 0 ? "" : _ref3$classes,
+       _ref3$color = _ref3.color,
+       color = _ref3$color === void 0 ? null : _ref3$color,
+@@ -72,7 +75,8 @@
+       subTitle = _ref3$subTitle === void 0 ? null : _ref3$subTitle,
+       _ref3$title = _ref3.title,
+       title = _ref3$title === void 0 ? null : _ref3$title;
+-  return /*#__PURE__*/React.createElement(MenuItem, {
++  const option = /*#__PURE__*/React.createElement(MenuItem, {
++    as: action ? "div" : undefined,
+     active: isActive,
+     disabled: disabled,
+     id: id,
+@@ -88,6 +92,10 @@
+       key: idx
+     }, /*#__PURE__*/React.createElement(S.HiddenContent, null, ", "), label);
+   })))));
++  return action ? React.createElement("li", {
++    role: "presentation",
++    style: { display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto" }
++  }, option, action) : option;
+ }
+ export function TransitStopOption(_ref4) {
+   var id = _ref4.id,
+diff --git a/node_modules/@opentripplanner/location-field/lib/index.d.ts b/node_modules/@opentripplanner/location-field/lib/index.d.ts
+--- a/node_modules/@opentripplanner/location-field/lib/index.d.ts
++++ b/node_modules/@opentripplanner/location-field/lib/index.d.ts
+@@ -2,6 +2,7 @@
+ import * as S from "./styled";
+ import { LocationFieldProps } from "./types";
+ declare const LocationField: ({ addLocationSearch, autoFocus, className, clearButtonIcon, clearLocation, currentPosition, currentPositionIcon, currentPositionUnavailableIcon, findNearbyStops, GeocodedOptionIconComponent, geocoderConfig, getCurrentPosition, hideExistingValue, initialSearchResults, inputPlaceholder, isRequired, isStatic, isValid, layerColorMap, location, LocationIconComponent, locationType, nearbyStops, onLocationSelected, onTextInputClick, operatorIconMap, preferredLayers, sessionOptionIcon, sessionSearches, showClearButton, showSecondaryLabels, showUserSettings, sortByDistance, stopOptionIcon, stopsIndex, suggestionCount, suggestionHeadingType: headingType, suppressNearby, UserLocationIconComponent, userLocationsAndRecentPlaces }: LocationFieldProps) => React.ReactElement;
++export declare const GeocodedOptionActionContext: React.Context<((feature: any, title: string) => React.ReactNode) | null>;
+ export default LocationField;
+ export { S as Styled };
+ //# sourceMappingURL=index.d.ts.map

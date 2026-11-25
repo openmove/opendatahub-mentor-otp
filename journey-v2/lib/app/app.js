@@ -20,6 +20,9 @@ import { Utensils } from '@styled-icons/fa-solid/Utensils'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 import React from 'react'
+import { GeocodedOptionActionContext } from '@opentripplanner/location-field'
+import SearchFavoriteButton from './components/app/search-favorite-button'
+import { SearchFavoritesProvider } from './context/search-favorites-context'
 
 
 // import OTP-RR components
@@ -212,9 +215,17 @@ const components = {
   DefaultMap: DefaultMap
 }
 
+const renderSearchFavorite = (feature, title) => (
+  <SearchFavoriteButton feature={feature} title={title} />
+)
+
 const Webapp = () => (
   <ErrorBoundary>
-    <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
+    <SearchFavoritesProvider>
+      <GeocodedOptionActionContext.Provider value={renderSearchFavorite}>
+        <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
+      </GeocodedOptionActionContext.Provider>
+    </SearchFavoritesProvider>
   </ErrorBoundary>
 )
 
