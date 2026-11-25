@@ -207,6 +207,18 @@ module.exports = {
             )
           }
         ),
+        // Use the local mobile header so the entire back button is actionable.
+        new webpack.NormalModuleReplacementPlugin(
+          /(^|\/)navigation-bar$/,
+          (resource) => {
+            if (!resource.context.endsWith(path.join('components', 'mobile')) ||
+                !resource.context.includes('otp-react-redux')) return
+            resource.request = path.resolve(
+              __dirname,
+              'lib/app/components/mobile/navigation-bar'
+            )
+          }
+        ),
         // The vendor mobile screens import the upstream default-map directly
         // instead of using the one from the app context, so mobile would show
         // the upstream layers and controls. Point them at the app's own map.
