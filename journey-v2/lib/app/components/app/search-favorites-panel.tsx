@@ -89,6 +89,16 @@ const Actions = styled.div`
 
 `
 
+const PlaceName = styled.button`
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #4e702d;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: underline;
+`
+
 const Add = styled.button`
   display: inline-flex;
   align-items: center;
@@ -106,9 +116,10 @@ const Add = styled.button`
   }
 `
 
-export default function SearchFavoritesPanel({ onBack, onClose }: {
+export default function SearchFavoritesPanel({ onBack, onClose, onShowPlace }: {
   onBack: () => void
   onClose: () => void
+  onShowPlace: () => void
 }) {
   const intl = useIntl()
   const favorites = useContext(SearchFavoritesContext)
@@ -152,6 +163,8 @@ export default function SearchFavoritesPanel({ onBack, onClose }: {
       {favorites?.favorites.length ? (
         <ul>
           {favorites.favorites.map((place) => {
+            const canShowPlace = place.coordinates?.length === 2 &&
+              place.coordinates.every(Number.isFinite)
             const remove = () => {
               favorites.removeFavorite(place.key)
               back.current?.focus()
@@ -167,7 +180,23 @@ export default function SearchFavoritesPanel({ onBack, onClose }: {
                   <Star size={16} aria-hidden="true" />
                 </Unstar>
                 <div>
-                  <strong>{place.name}</strong>
+                  {canShowPlace ? (
+                    <PlaceName
+                      type="button"
+                      aria-label={intl.formatMessage(
+                        { id: 'components.SearchFavorites.showOnMap' },
+                        { name: place.name }
+                      )}
+                      onClick={() => {
+                        onShowPlace()
+                        favorites.setMapPlace({ ...place })
+                      }}
+                    >
+                      {place.name}
+                    </PlaceName>
+                  ) : (
+                    <strong>{place.name}</strong>
+                  )}
                   {place.address && <p>{place.address}</p>}
                 </div>
                 <Actions>

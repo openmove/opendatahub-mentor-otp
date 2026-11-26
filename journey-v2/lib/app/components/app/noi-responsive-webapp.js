@@ -486,7 +486,7 @@ class RouterWrapperWithAuth0 extends Component {
                               content={popupContent}
                               hideModal={() => setPopupContent(null)}
                             />
-                            <AppMenu />
+                            <AppMenu stayOnCurrentMap />
                             <components.Map />
                           </>
                         )}

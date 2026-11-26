@@ -51,6 +51,8 @@ function readFavorites(): FavoritePlace[] {
 
 export const SearchFavoritesContext = createContext<{
   favorites: FavoritePlace[]
+  mapPlace: FavoritePlace | null
+  setMapPlace: (place: FavoritePlace | null) => void
   saveFavorite: (place: FavoritePlace, previousKey?: string) => SaveFavoriteResult
   removeFavorite: (key: string) => void
   toggleFavorite: (place: FavoritePlace) => void
@@ -58,6 +60,7 @@ export const SearchFavoritesContext = createContext<{
 
 export function SearchFavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState(readFavorites)
+  const [mapPlace, setMapPlace] = useState<FavoritePlace | null>(null)
   const currentFavorites = useRef(favorites)
 
   function saveFavorites(next: FavoritePlace[]) {
@@ -94,7 +97,7 @@ export function SearchFavoritesProvider({ children }: { children: React.ReactNod
   }
 
   return (
-    <SearchFavoritesContext.Provider value={{ favorites, removeFavorite, saveFavorite, toggleFavorite }}>
+    <SearchFavoritesContext.Provider value={{ favorites, mapPlace, setMapPlace, removeFavorite, saveFavorite, toggleFavorite }}>
       {children}
     </SearchFavoritesContext.Provider>
   )

@@ -682,6 +682,7 @@ language:
         terms: "Terms and conditions"
         privacy: "Privacy and cookie policy"
       SearchFavorites:
+        showOnMap: "Show {name} on the map"
         limit: "You can save up to 5 favourites."
         addTitle: "Add"
         backToFavorites: "Back to favourites"
@@ -930,6 +931,7 @@ language:
         terms: "Termini e condizioni"
         privacy: "Privacy e cookie"
       SearchFavorites:
+        showOnMap: "Mostra {name} sulla mappa"
         limit: "Puoi salvare al massimo 5 preferiti."
         addTitle: "Aggiungi"
         backToFavorites: "Torna ai preferiti"
@@ -2075,6 +2077,7 @@ language:
         terms: "Nutzungsbedingungen"
         privacy: "Datenschutz und Cookies"
       SearchFavorites:
+        showOnMap: "{name} auf der Karte anzeigen"
         limit: "Du kannst bis zu 5 Favoriten speichern."
         addTitle: "Hinzufügen"
         backToFavorites: "Zurück zu den Favoriten"

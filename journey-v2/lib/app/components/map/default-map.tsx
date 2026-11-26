@@ -46,7 +46,7 @@ import GeoJsonLayer from '@otp-react-redux/lib/components/map/connected-geojson-
 import ItinSummaryOverlay from '@otp-react-redux/lib/components/map/itinerary-summary-overlay'
 import NearbyViewDotOverlay from '@otp-react-redux/lib/components/map/nearby-view-dot-overlay'
 import ParkAndRideOverlay from '@otp-react-redux/lib/components/map/connected-park-and-ride-overlay'
-import PointPopup from '@otp-react-redux/lib/components/map/point-popup'
+import FavoriteMapPopup from './favorite-map-popup'
 import RoutePreviewOverlay from '@otp-react-redux/lib/components/map/route-preview-overlay'
 import RouteViewerOverlay from '@otp-react-redux/lib/components/map/connected-route-viewer-overlay'
 import StopsOverlay from '@otp-react-redux/lib/components/map/connected-stops-overlay'
@@ -342,7 +342,7 @@ class DefaultMap extends Component {
           showEverything={nearbyViewActive}
           zoom={zoom}
         >
-          <PointPopup />
+          <FavoriteMapPopup />
           <NearbyViewDotOverlay />
           <ItinSummaryOverlay />
           <RoutePreviewOverlay />

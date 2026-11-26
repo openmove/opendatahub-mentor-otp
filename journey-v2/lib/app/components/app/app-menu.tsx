@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: MIT
 
 import { ChevronLeft, Times } from '@styled-icons/fa-solid'
+import coreUtils from '@opentripplanner/core-utils'
 import { connect } from 'react-redux'
 import { Envelope } from '@styled-icons/fa-regular/Envelope'
 import { ExternalLinkSquareAlt } from '@styled-icons/fa-solid/ExternalLinkSquareAlt'
 import { FormattedMessage, injectIntl } from 'react-intl'
-import { MapMarked, MapPin } from '@styled-icons/fa-solid'
 import { GraduationCap } from '@styled-icons/fa-solid/GraduationCap'
 import { History } from '@styled-icons/fa-solid/History'
 import React, { Component, useContext } from 'react'
@@ -16,7 +16,9 @@ import type { WrappedComponentProps } from 'react-intl'
 
 import * as callTakerActions from '@otp-react-redux/lib/actions/call-taker'
 import * as fieldTripActions from '@otp-react-redux/lib/actions/field-trip'
+import * as mapActions from '@otp-react-redux/lib/actions/map'
 import * as uiActions from '@otp-react-redux/lib/actions/ui'
+import { MobileScreens } from '@otp-react-redux/lib/actions/ui-constants'
 import { AppMenuItemConfig, LanguageConfig } from '@otp-react-redux/lib/util/config-types'
 import { AppReduxState } from '@otp-react-redux/lib/util/state-types'
 import { ComponentContext } from '@otp-react-redux/lib/util/contexts'
@@ -51,6 +53,7 @@ type MenuItem = {
 
 type AppMenuProps = {
   activeLocale: string
+  clearMapPopupLocation: () => void
   callTakerEnabled?: boolean
   extraMenuItems?: AppMenuItemConfig[]
   fieldTripEnabled?: boolean
@@ -61,6 +64,9 @@ type AppMenuProps = {
   resetAndToggleCallHistory?: () => void
   resetAndToggleFieldTrips?: () => void
   setLocale: (locale: string) => void
+  setMainPanelContent: (panel: null) => void
+  setMobileScreen: (screen: number) => void
+  stayOnCurrentMap?: boolean
   setPopupContent: (url: string) => void
   startOverFromInitialUrl: () => void
   toggleMailables: () => void
@@ -108,6 +114,16 @@ class AppMenu extends Component<
   }
 
   _closePane = () => this.setState({ isPaneOpen: false, view: 'menu' })
+
+  _showFavorite = () => {
+    const { clearMapPopupLocation, setMainPanelContent, setMobileScreen, stayOnCurrentMap } = this.props
+    clearMapPopupLocation()
+    this._closePane()
+    if (!stayOnCurrentMap) {
+      setMainPanelContent(null)
+      if (coreUtils.ui.isMobile()) setMobileScreen(MobileScreens.WELCOME_SCREEN)
+    }
+  }
 
   _openView = (view: AppMenuState['view']) => {
     this.setState({ view }, () => {
@@ -234,7 +250,11 @@ class AppMenu extends Component<
           width="min(100vw, 393px)"
         >
           {view === 'favorites' ? (
-            <SearchFavoritesPanel onBack={this._backToMenu} onClose={this._closePane} />
+            <SearchFavoritesPanel
+              onBack={this._backToMenu}
+              onClose={this._closePane}
+              onShowPlace={this._showFavorite}
+            />
           ) : (
             <div id="app-menu">
               <header className="journey-menu-header">
@@ -284,28 +304,6 @@ class AppMenu extends Component<
                   ) : (
                     <button key={id} type="button" disabled>{label}</button>
                   ))}
-                  {/* This item is duplicated by the view-switcher, but only shown on mobile
-                  when the view switcher isn't shown (using css) */}
-                  <AppMenuItem
-                    className="app-menu-trip-planner-link"
-                    icon={<MapMarked />}
-                    onClick={this._togglePane}
-                    text={intl.formatMessage({
-                      id: 'components.BatchRoutingPanel.shortTitle'
-                    })}
-                    to="/"
-                  />
-                  {/* This item is duplicated by the view-switcher, but only shown on mobile
-                  when the view switcher isn't shown (using css) */}
-                  <AppMenuItem
-                    className="app-menu-nearby-viewer-link"
-                    icon={<MapPin />}
-                    onClick={this._togglePane}
-                    text={intl.formatMessage({
-                      id: 'components.ViewSwitcher.nearby'
-                    })}
-                    to="/nearby"
-                  />
                   {popupTarget && (
                     <AppMenuItem
                       icon={<SvgIcon iconName={popupTarget} />}
@@ -369,9 +367,12 @@ const mapStateToProps = (state: AppReduxState) => {
 }
 
 const mapDispatchToProps = {
+  clearMapPopupLocation: mapActions.clearMapPopupLocation,
   resetAndToggleCallHistory: callTakerActions.resetAndToggleCallHistory,
   resetAndToggleFieldTrips: fieldTripActions.resetAndToggleFieldTrips,
   setLocale: uiActions.setLocale,
+  setMainPanelContent: uiActions.setMainPanelContent,
+  setMobileScreen: uiActions.setMobileScreen,
   setPopupContent: uiActions.setPopupContent,
   startOverFromInitialUrl: uiActions.startOverFromInitialUrl,
   toggleMailables: callTakerActions.toggleMailables
