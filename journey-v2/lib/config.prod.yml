@@ -660,6 +660,18 @@ language:
       modes:
         airplane: Airplane
     components:
+      JourneyMenu:
+        favorites: "Favourites"
+        technicalCookies: "Technical cookies"
+        weather: "Weather widget"
+        privateHire: "Private hire vehicles"
+        onDemandServices: "On-demand services"
+        language: "Language"
+        restart: "Restart"
+        preferences: "User preferences"
+        about: "About us"
+        terms: "Terms and conditions"
+        privacy: "Privacy and cookie policy"
       Onboarding:
         locationQuestion: "For optimal performance, may we use your current location?"
         locationManual: "No, I'd rather enter it manually"
@@ -883,6 +895,18 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      JourneyMenu:
+        favorites: "Preferiti"
+        technicalCookies: "Cookie tecnici"
+        weather: "Widget meteo"
+        privateHire: "Veicoli a noleggio con conducente"
+        onDemandServices: "Servizi a chiamata"
+        language: "Lingua"
+        restart: "Ricomincia"
+        preferences: "Preferenze utente"
+        about: "Chi siamo"
+        terms: "Termini e condizioni"
+        privacy: "Privacy e cookie"
       Onboarding:
         locationQuestion: "Per offrirti la migliore esperienza, possiamo usare la tua posizione attuale?"
         locationManual: "No, preferisco inserirla manualmente"
@@ -2003,6 +2027,18 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      JourneyMenu:
+        favorites: "Favoriten"
+        technicalCookies: "Technische Cookies"
+        weather: "Wetter-Widget"
+        privateHire: "Mietwagen mit Fahrer"
+        onDemandServices: "Bedarfsverkehr"
+        language: "Sprache"
+        restart: "Neu starten"
+        preferences: "Benutzereinstellungen"
+        about: "Über uns"
+        terms: "Nutzungsbedingungen"
+        privacy: "Datenschutz und Cookies"
       Onboarding:
         locationQuestion: "Dürfen wir deinen aktuellen Standort verwenden, um die App für dich zu verbessern?"
         locationManual: "Nein, ich möchte ihn manuell eingeben"

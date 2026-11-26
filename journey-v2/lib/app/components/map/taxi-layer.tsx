@@ -24,9 +24,6 @@ interface PopupInfo {
   properties: any
 }
 
-// Used for the refresh interval.
-let refreshInterface: NodeJS.Timeout | null = null
-
 const TaxiOverlay = (props: Props) => {
   const map = useMap().default
   const { setLocation, url } = props
@@ -132,17 +129,12 @@ const TaxiOverlay = (props: Props) => {
       downloadLocations()
     }
 
-    if (refreshInterface) {
-      clearInterval(refreshInterface)
-    }
-    refreshInterface = setInterval(() => {
+    const refreshInterval = setInterval(() => {
       downloadLocations()
     }, 5000)
 
     return () => {
-      if (refreshInterface) {
-        clearInterval(refreshInterface)
-      }
+      clearInterval(refreshInterval)
     }
   }, [url])
 

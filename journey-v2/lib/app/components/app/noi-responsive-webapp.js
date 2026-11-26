@@ -262,9 +262,10 @@ class NoiResponsiveWebapp extends Component {
     if (isWelcomeScreen) {
       return (
         <PlanningProvider>
-          {/* No DesktopNav: the Figma desktop layout has no header. Burger menu
-              and Trip/Nearby switch return in a later task. */}
           <div className="otp">
+            <div className="desktop-app-menu">
+              <AppMenu />
+            </div>
             <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
             <PlanningObserver />
             <Grid>
@@ -287,6 +288,9 @@ class NoiResponsiveWebapp extends Component {
     return (
       <PlanningProvider>
         <div className="otp">
+          <div className="desktop-app-menu">
+            <AppMenu />
+          </div>
           <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
           <PlanningObserver />
           <Grid>

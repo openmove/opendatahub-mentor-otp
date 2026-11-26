@@ -11,10 +11,10 @@ import * as uiActions from '@otp-react-redux/lib/actions/ui'
 import { MobileScreens } from '@otp-react-redux/lib/actions/ui-constants'
 import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import MobileContainer from '@otp-react-redux/lib/components/mobile/container'
-import MobileNavigationBar from '@otp-react-redux/lib/components/mobile/navigation-bar'
 
 import { ChevronDoubleUp } from '../../icons/nav'
 import DefaultMap from '../map/default-map'
+import MobileNavigationBar from './navigation-bar'
 
 interface Props {
   setMobileScreen: (screen: number) => void

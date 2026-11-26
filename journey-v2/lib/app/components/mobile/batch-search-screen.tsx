@@ -11,11 +11,11 @@ import { MobileScreens } from '@otp-react-redux/lib/actions/ui-constants'
 import BatchSettings from '@otp-react-redux/lib/components/form/batch-settings'
 import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import MobileContainer from '@otp-react-redux/lib/components/mobile/container'
-import MobileNavigationBar from '@otp-react-redux/lib/components/mobile/navigation-bar'
 import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
 
 import { ChevronDoubleDown, ChevronDoubleUp } from '../../icons/nav'
 import DefaultMap from '../map/default-map'
+import MobileNavigationBar from './navigation-bar'
 
 const { SET_FROM_LOCATION, SET_TO_LOCATION } = MobileScreens
 

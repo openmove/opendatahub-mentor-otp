@@ -20,6 +20,7 @@ import { Utensils } from '@styled-icons/fa-solid/Utensils'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
 import React from 'react'
+import { JourneyPreferencesProvider } from './context/journey-preferences-context'
 
 
 // import OTP-RR components
@@ -214,7 +215,9 @@ const components = {
 
 const Webapp = () => (
   <ErrorBoundary>
-    <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
+    <JourneyPreferencesProvider>
+      <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
+    </JourneyPreferencesProvider>
   </ErrorBoundary>
 )
 
