@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: NOI Techpark <digital@noi.bz.it>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # OTP's ActuatorAPI (see otp-config.json). Discovered by DNS rather than a static target: during
+  # a docker rollout two otp containers run side by side, and the service name resolves to both.
+  - job_name: otp
+    metrics_path: /otp/actuators/prometheus
+    dns_sd_configs:
+      - names: ["otp"]
+        type: A
+        port: 8080
+        refresh_interval: 15s
