@@ -921,7 +921,7 @@ language:
       JourneyMenu:
         technicalCookies: "Cookie tecnici"
         weather: "Widget meteo"
-        privateHire: "Veicoli NCC"
+        privateHire: "Veicoli a noleggio con conducente"
         onDemandServices: "Servizi a chiamata"
         language: "Lingua"
         restart: "Ricomincia"
