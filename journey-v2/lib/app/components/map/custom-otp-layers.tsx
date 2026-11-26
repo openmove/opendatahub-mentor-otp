@@ -8,6 +8,7 @@ import { Label as BsLabel } from 'react-bootstrap'
 import ReactDOMServer from 'react-dom/server'
 import { FormattedMessage, injectIntl } from 'react-intl'
 import { ClassicModeIcon } from '@opentripplanner/icons'
+import coreUtils from '@opentripplanner/core-utils'
 import { Wheelchair } from '@styled-icons/fa-solid/Wheelchair'
 import { setViewedStop } from '@otp-react-redux/lib/actions/ui'
 import { setLocation } from '@otp-react-redux/lib/actions/map'
@@ -75,7 +76,7 @@ const LAYER_CONFIG = {
         filter: ['==', ['get', 'gtfsId'], properties.parentStation],
         sourceLayer: 'stations'
       })[0]
-      const lines = getRouteNames(station?.properties.routes)
+      const lines = getRouteNames(properties.routes) || getRouteNames(station?.properties.routes)
       return (
         <PoiPopup
           icon={getModeIcon(properties.type)}
@@ -618,14 +619,15 @@ const OTPVectorLayer = ({ sourceLayerName, layerStyle = {}, name, setViewedStop,
       )}*/}
       {stickyInfo && (
         <Popup
-          // Figma tooltip: above the marker, no close button (a click on the map closes it).
-          anchor="bottom"
+          anchor={sourceLayerName === 'stops' && !coreUtils.ui.isMobile() ? 'left' : 'bottom'}
           className="poi-popup-container"
           closeButton={false}
           latitude={stickyInfo.geometry.coordinates[1]}
           longitude={stickyInfo.geometry.coordinates[0]}
           maxWidth="none"
-          offset={POI_POPUP_OFFSET}
+          offset={sourceLayerName === 'stops' && !coreUtils.ui.isMobile()
+            ? [18, -16]
+            : POI_POPUP_OFFSET}
           onClose={onStickyClose}
         >
           {renderPopupContent(stickyInfo)}

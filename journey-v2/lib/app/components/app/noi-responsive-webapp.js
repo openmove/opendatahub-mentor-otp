@@ -5,7 +5,6 @@
 // TODO: Remove this eslint exception when implementing TypeScript.
 /* eslint-disable react/prop-types */
 import { Auth0Provider } from '@auth0/auth0-react'
-import { Col, Grid, Row } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { ConnectedRouter } from 'connected-react-router'
 import { createHashHistory } from 'history'
@@ -21,7 +20,7 @@ import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import qs from 'qs'
 import React, { Component } from 'react'
-import { PlanningProvider, PlanningContext } from '../../context/planning-context'
+import { PlanningProvider } from '../../context/planning-context'
 
 import * as authActions from '@otp-react-redux/lib/actions/auth'
 import * as callTakerActions from '@otp-react-redux/lib/actions/call-taker'
@@ -45,7 +44,6 @@ import withMap from '@otp-react-redux/lib/components/map/with-map'
 import PopupWrapper from '@otp-react-redux/lib/components/app/popup'
 import SessionTimeout from '@otp-react-redux/lib/components/app/session-timeout'
 
-import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import PlanningObserver from './planning-observer'
 import ViewSwitcher from './view-switcher'
 import {
@@ -54,6 +52,7 @@ import {
 } from '@otp-react-redux/lib/actions/ui-constants'
 import OnboardingFlow from '../onboarding/OnboardingFlow'
 import AppMenu from './app-menu'
+import logo from '../../../../branding/opendatahub/map-logo.svg'
 
 const { isMobile } = coreUtils.ui
 
@@ -228,86 +227,31 @@ class NoiResponsiveWebapp extends Component {
   }
 
   renderDesktopView = () => {
-    const { sessionTimeoutSeconds } = this.props
+    const { popupContent, sessionTimeoutSeconds } = this.props
     const { MainControls, MainPanel, MapWindows } = this.context
-    const { popupContent, query, mainPanelContent, isViewingStop } = this.props
-    const isWelcomeScreen =
-      !isViewingStop && !query.from && !query.to && !mainPanelContent
 
-    // If it's the welcome screen, show the full-screen map with an overlaid input.
-    // Always render the to-location input overlay, toggle visibility only.
-    const welcomeOverlay = (
-      <PlanningContext.Consumer>
-        {({ isPlanning }) => (
-          <div
-            style={{
-              backgroundColor: 'white',
-              border: '1px white solid',
-              borderRadius: '10px',
-              left: '50px',
-              padding: '20px',
-              position: 'absolute',
-              top: '50px',
-              width: '400px',
-              zIndex: 19,
-              display: !isPlanning ? 'block' : 'none'
-            }}
-          >
-            <LocationField locationType="to" />
-          </div>
-        )}
-      </PlanningContext.Consumer>
-    )
-
-    if (isWelcomeScreen) {
-      return (
-        <PlanningProvider>
-          <div className="otp">
-            <div className="desktop-app-menu">
-              <AppMenu />
-            </div>
-            <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
-            <PlanningObserver />
-            <Grid>
-              <Row className="main-row">
-                {MainControls && <MainControls />}
-                <Col key="map" className="map-container" md={12} sm={6}>
-                  {welcomeOverlay}
-                  {MapWindows && <MapWindows />}
-                  <Map />
-                </Col>
-              </Row>
-            </Grid>
-            {sessionTimeoutSeconds && <SessionTimeout />}
-          </div>
-        </PlanningProvider>
-      )
-    }
-
-    // Otherwise, show the main planning view with the sidebar.
     return (
       <PlanningProvider>
-        <div className="otp">
-          <div className="desktop-app-menu">
-            <AppMenu />
-          </div>
+        <div className="otp desktop-planner">
           <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
           <PlanningObserver />
-          <Grid>
-            <Row className="main-row">
-              <Col key="sidebar" className="sidebar" md={4} sm={6}>
-                <main tabIndex={-1}>
-                  <MainPanel />
-                </main>
-              </Col>
-              {MainControls && <MainControls />}
-              <Col key="map" className="map-container" md={8} sm={6}>
-                {welcomeOverlay}
-                {MapWindows && <MapWindows />}
-                <Map />
-              </Col>
-            </Row>
-          </Grid>
+          <div className="desktop-planner__sidebar">
+            <header className="desktop-planner__header">
+              <div className="desktop-app-menu">
+                <AppMenu />
+              </div>
+              <img src={logo} width="161" height="42" alt="Journey Planner - Open Data Hub" />
+            </header>
+            <ViewSwitcher />
+            <main tabIndex={-1}>
+              <MainPanel />
+            </main>
+          </div>
+          <div className="desktop-planner__map">
+            {MainControls && <MainControls />}
+            {MapWindows && <MapWindows />}
+            <Map />
+          </div>
           {sessionTimeoutSeconds && <SessionTimeout />}
         </div>
       </PlanningProvider>

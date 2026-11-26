@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
+import { Award, ChevronDown, Plus } from '@styled-icons/fa-solid'
 import { connect } from 'react-redux'
 import { FormattedMessage, injectIntl, IntlShape } from 'react-intl'
 import React, { Component } from 'react'
@@ -21,14 +22,12 @@ import NarrativeItineraries from '@otp-react-redux/lib/components/narrative/narr
 import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
 
 
-import PoiViewer from '../poi-viewer'
 
 import * as apiActions from '@otp-react-redux/lib/actions/api'
 import * as mapActions from '@otp-react-redux/lib/actions/map'
 import * as uiActions from '@otp-react-redux/lib/actions/ui'
 import * as formActions from '@otp-react-redux/lib/actions/form'
 
-import NoiNearbyView from '../viewers/nearby/noi-nearby-view'
 import NextFlightSuggestion from './next-flight-suggestion'
 import { PlanningContext } from '../../context/planning-context'
 
@@ -58,7 +57,7 @@ class DestinationPanel extends Component<Props> {
     // Also flip global planning state so welcome overlay/nearby list hide.
     const ctx: any = (this as any).context
     if (ctx && typeof ctx.setIsPlanning === 'function') ctx.setIsPlanning(true)
-    setTimeout(()=> this.setState({ planTripClicked: true }), 100)
+    this.setState({ planTripClicked: true })
   }
 
   componentDidUpdate() {
@@ -68,13 +67,10 @@ class DestinationPanel extends Component<Props> {
   }
 
   render() {
-    const { activeSearch, intl, mobile, query, showUserSettings, isViewingStop } = this.props
+    const { activeSearch, intl, mobile } = this.props
     const { planTripClicked } = this.state
     const planningCtx: any = (this as any).context || { isPlanning: false }
     const isPlanning = planningCtx.isPlanning
-
-    let validLocationsStop = ['Stop', 'RentalVehicle', 'VehicleParking', 'BikeRentalStation'];
-    let validLocationsPoi = ['Stop', 'RentalVehicle', 'VehicleParking', 'BikeRentalStation'];
 
     const mapAction = mobile
       ? intl.formatMessage({
@@ -98,49 +94,59 @@ class DestinationPanel extends Component<Props> {
             <FormattedMessage id="components.BatchSearchScreen.header" />
           </h1>
         </InvisibleA11yLabel>
-        {/* Keep both sections mounted; toggle visibility to avoid unmount-time async updates. */}
-        <div style={{ display: !(isPlanning || query.from) && query.to ? 'block' : 'none' }}>
-          <PoiViewer
-            handlePlanTripClick={this.handlePlanTripClick}
-            hideBackButton
-            selectedPlace={query.to}
-          />
+        <div className="form desktop-trip-form">
+          <div className="desktop-trip-fields">
+            <LocationField
+              inputPlaceholder={intl.formatMessage(
+                { id: 'common.searchForms.enterStartLocation' },
+                { mapAction }
+              )}
+              isRequired
+              locationType="from"
+              selfValidate={planTripClicked || isPlanning}
+              showClearButton={!mobile}
+            />
+            <LocationField
+              inputPlaceholder={intl.formatMessage(
+                { id: 'common.searchForms.enterDestination' },
+                { mapAction }
+              )}
+              isRequired
+              locationType="to"
+              selfValidate={planTripClicked || isPlanning}
+              showClearButton={!mobile}
+            />
+          </div>
+          <div className="desktop-trip-actions">
+            <SwitchButton />
+            <button type="button" className="desktop-trip-control" disabled>
+              <Plus size={12} aria-hidden />
+              <FormattedMessage id="components.DesktopTrip.addStop" />
+            </button>
+          </div>
+          <div
+            className="desktop-trip-settings"
+            style={{
+              '--desktop-trip-search-label': JSON.stringify(
+                intl.formatMessage({ id: 'components.DesktopTrip.search' })
+              )
+            } as React.CSSProperties}
+          >
+            <div className="desktop-trip-batch">
+              <BatchSettings onPlanTripClick={this.handlePlanTripClick} />
+            </div>
+            <button type="button" className="desktop-trip-optimization" disabled>
+              <Award size={16} aria-hidden />
+              <FormattedMessage id="components.DesktopTrip.fastest" />
+              <ChevronDown size={12} aria-hidden />
+            </button>
+            <label className="desktop-trip-direct">
+              <FormattedMessage id="components.DesktopTrip.direct" />
+              <input type="checkbox" role="switch" disabled />
+            </label>
+          </div>
         </div>
-        <div
-          className="form"
-          style={{ padding: '10px', display: (isPlanning || query.from) ? 'block' : 'none' }}
-        >
-          <span className="batch-routing-panel-location-fields">
-              <LocationField
-                inputPlaceholder={intl.formatMessage(
-                  { id: 'common.searchForms.enterStartLocation' },
-                  { mapAction }
-                )}
-                isRequired
-                locationType="from"
-                selfValidate={planTripClicked || isPlanning}
-                showClearButton={!mobile}
-              />
-              <LocationField
-                inputPlaceholder={intl.formatMessage(
-                  { id: 'common.searchForms.enterDestination' },
-                  { mapAction }
-                )}
-                isRequired
-                locationType="to"
-                selfValidate={planTripClicked || isPlanning}
-                showClearButton={!mobile}
-              />
-              <div className="switch-button-container">
-                <SwitchButton />
-              </div>
-          </span>
-          <BatchSettings  />
-        </div>
-        
-        {/* !activeSearch && showUserSettings && (
-          <UserSettings style={{ margin: '0 10px', overflowY: 'auto' }} />
-        ) */}
+
         {activeSearch && (
           <div
             className="desktop-narrative-container"
@@ -153,11 +159,6 @@ class DestinationPanel extends Component<Props> {
             <NarrativeItineraries />
           </div>
         )}
-        {!(isPlanning || query.from) &&
-          <NoiNearbyView
-            handlePlanTripClick={this.handlePlanTripClick}
-            validLocations={query.to?.rawGeocodedFeature?.properties?.layer === 'stops' ? validLocationsStop : validLocationsPoi }
-          />}
       </ViewerContainer>
     )
   }

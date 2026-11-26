@@ -670,6 +670,11 @@ language:
       modes:
         airplane: Airplane
     components:
+      DesktopTrip:
+        addStop: "Add a stop"
+        fastest: "Fastest route"
+        direct: "Single-vehicle solutions"
+        search: "Search for routes"
       JourneyMenu:
         favorites: "Favourites"
         technicalCookies: "Technical cookies"
@@ -909,6 +914,11 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      DesktopTrip:
+        addStop: "Aggiungi una fermata"
+        fastest: "Percorso più veloce"
+        direct: "Soluzioni con un solo mezzo"
+        search: "Cerca percorsi"
       JourneyMenu:
         favorites: "Preferiti"
         technicalCookies: "Cookie tecnici"
@@ -2044,6 +2054,11 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      DesktopTrip:
+        addStop: "Stopp hinzufügen"
+        fastest: "Schnellste Route"
+        direct: "Verbindungen ohne Umstieg"
+        search: "Verbindungen suchen"
       JourneyMenu:
         favorites: "Favoriten"
         technicalCookies: "Technische Cookies"
