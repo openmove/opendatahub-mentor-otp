@@ -74,8 +74,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8989/health"]
       interval: 10s
       timeout: 3s
-      # the .pdf download is very slow sometimes
-      # start_period: 1000s
+      # Covers the monthly OSM download and the graph import that follows it
+      start_period: 1000s
     environment:
       - JAVA_OPTS=-Xmx4g
     volumes:
