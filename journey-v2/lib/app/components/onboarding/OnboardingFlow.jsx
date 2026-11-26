@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { getLanguageOptions } from '@otp-react-redux/lib/util/i18n'
+import coreUtils from '@opentripplanner/core-utils'
 
 import logo from '../../../../branding/opendatahub/map-logo.svg'
 import './onboarding.scss'
 
-const desktopQuery = '(min-width: 768px)'
+const { isMobile } = coreUtils.ui
 
 export default function OnboardingFlow({ onComplete, onLanguageConfirm, onPosition, renderMap }) {
     const [step, setStep] = useState(1)
@@ -25,7 +26,9 @@ export default function OnboardingFlow({ onComplete, onLanguageConfirm, onPositi
     const selectedMessages = languageConfig?.[selectedLanguage]?.components?.Onboarding
     const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
     const trigger = useRef(null)
-    const [isDesktop, setIsDesktop] = useState(() => window.matchMedia(desktopQuery).matches)
+    // Same user agent check the app uses to pick its mobile or desktop
+    // layout, so onboarding and app never disagree (tablets, narrow windows).
+    const isDesktop = !isMobile()
     const showMap = isDesktop && renderMap
     const headingKey = isLanguageStep
         ? (showMap ? 'headingDesktop' : 'headingMobile')
@@ -37,12 +40,8 @@ export default function OnboardingFlow({ onComplete, onLanguageConfirm, onPositi
 
     useEffect(() => {
         mounted.current = true
-        const query = window.matchMedia(desktopQuery)
-        const update = () => setIsDesktop(query.matches)
-        query.addEventListener('change', update)
         return () => {
             mounted.current = false
-            query.removeEventListener('change', update)
         }
     }, [])
 
