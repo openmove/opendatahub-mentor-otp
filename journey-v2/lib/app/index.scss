@@ -745,6 +745,69 @@ $mobile-welcome-panel-height: 164px;
     top: auto;
   }
 
+  .otp.mobile main:has(.mobile-trip-form--expanded) .batch-search-map {
+    min-height: min(34dvh, 360px);
+  }
+
+  .otp.mobile main .mobile-trip-form {
+    padding-inline: 16px;
+    font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+
+    > div[role='group'] {
+      min-height: 48px;
+      margin: 0;
+      border-bottom: 1px solid #e1e2e4;
+    }
+
+    input[role='combobox'] {
+      font-size: 16px;
+    }
+
+    [role='listbox'] {
+      width: 100%;
+      min-width: 0;
+      max-height: min(176px, 36dvh);
+      overscroll-behavior: contain;
+      padding: 0;
+      border-color: #e1e2e4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    [role='option'] {
+      min-height: 40px;
+      padding: 4px 8px;
+      border-bottom: 1px solid #e1e2e4;
+      font-size: 16px;
+    }
+
+    [role='option']:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .otp.mobile main .mobile-trip-form--expanded {
+    overflow-y: auto;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .mobile-trip-form .trip-form-controls .metro-mode-selector {
+    grid-auto-columns: 44px;
+    grid-auto-flow: column;
+    grid-template-rows: auto auto;
+    grid-template-columns: none;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    > legend {
+      grid-column: 1 / span 6;
+      grid-row: 1;
+    }
+
+    > span {
+      grid-row: 2;
+    }
+  }
+
   /* Transparent header floating over the map, as in the Figma. The map now
      starts at the top of the screen, and the header text turns dark because
      the vendor's white text would disappear over a light map. */
@@ -830,6 +893,10 @@ $mobile-welcome-panel-height: 164px;
     position: fixed;
     transform: translateX(-50%);
     z-index: 999;
+  }
+
+  body:has(.otp.mobile .mobile-trip-form--expanded) .mobile-view-switcher {
+    display: none;
   }
 
   /* The nearby view is vendor and scrolls with the page, so its last cards
@@ -982,7 +1049,12 @@ $mobile-welcome-panel-height: 164px;
     }
   }
 
-  .desktop-trip-actions {
+}
+
+.trip-form-controls {
+  font-size: 14px;
+
+  .trip-form-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -990,7 +1062,7 @@ $mobile-welcome-panel-height: 164px;
   }
 
   .switch-button,
-  .desktop-trip-control {
+  .trip-form-control {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1007,28 +1079,28 @@ $mobile-welcome-panel-height: 164px;
     display: inline !important;
   }
 
-  .desktop-trip-control:disabled {
+  .trip-form-control:disabled {
     border-color: #e1e2e4;
     color: #8b8d90;
   }
 
-  .desktop-trip-settings {
+  .trip-form-settings {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .desktop-trip-batch,
-  .desktop-trip-batch > div,
-  .desktop-trip-batch > div > div {
+  .trip-form-batch,
+  .trip-form-batch > div,
+  .trip-form-batch > div > div {
     display: contents;
   }
 
-  .desktop-trip-batch > div > span {
+  .trip-form-batch > div > span {
     grid-row: 1;
   }
 
   #date-time-button,
-  .desktop-trip-optimization {
+  .trip-form-optimization {
     width: 100%;
     min-height: 44px;
     border: 0;
@@ -1039,7 +1111,7 @@ $mobile-welcome-panel-height: 164px;
     text-align: left;
   }
 
-  .desktop-trip-optimization {
+  .trip-form-optimization {
     display: flex;
     grid-row: 2;
     align-items: center;
@@ -1108,7 +1180,7 @@ $mobile-welcome-panel-height: 164px;
     color: #4e702d;
   }
 
-  .desktop-trip-direct {
+  .trip-form-direct {
     display: flex;
     grid-row: 4;
     align-items: center;
@@ -1144,7 +1216,7 @@ $mobile-welcome-panel-height: 164px;
     }
 
     &::after {
-      content: var(--desktop-trip-search-label);
+      content: var(--trip-form-search-label);
     }
   }
 }

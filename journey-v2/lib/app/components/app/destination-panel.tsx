@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { Award, ChevronDown, Plus } from '@styled-icons/fa-solid'
 import { connect } from 'react-redux'
 import { FormattedMessage, injectIntl, IntlShape } from 'react-intl'
 import React, { Component } from 'react'
@@ -17,9 +16,7 @@ import InvisibleA11yLabel from '@otp-react-redux/lib/components/util/invisible-a
 import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import ViewerContainer from '../viewers/viewer-container'
 
-import BatchSettings from '@otp-react-redux/lib/components/form/batch-settings'
 import NarrativeItineraries from '@otp-react-redux/lib/components/narrative/narrative-itineraries'
-import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
 
 
 
@@ -29,6 +26,7 @@ import * as uiActions from '@otp-react-redux/lib/actions/ui'
 import * as formActions from '@otp-react-redux/lib/actions/form'
 
 import NextFlightSuggestion from './next-flight-suggestion'
+import TripFormControls from './trip-form-controls'
 import { PlanningContext } from '../../context/planning-context'
 
 interface Props {
@@ -117,34 +115,7 @@ class DestinationPanel extends Component<Props> {
               showClearButton={!mobile}
             />
           </div>
-          <div className="desktop-trip-actions">
-            <SwitchButton />
-            <button type="button" className="desktop-trip-control" disabled>
-              <Plus size={12} aria-hidden />
-              <FormattedMessage id="components.DesktopTrip.addStop" />
-            </button>
-          </div>
-          <div
-            className="desktop-trip-settings"
-            style={{
-              '--desktop-trip-search-label': JSON.stringify(
-                intl.formatMessage({ id: 'components.DesktopTrip.search' })
-              )
-            } as React.CSSProperties}
-          >
-            <div className="desktop-trip-batch">
-              <BatchSettings onPlanTripClick={this.handlePlanTripClick} />
-            </div>
-            <button type="button" className="desktop-trip-optimization" disabled>
-              <Award size={16} aria-hidden />
-              <FormattedMessage id="components.DesktopTrip.fastest" />
-              <ChevronDown size={12} aria-hidden />
-            </button>
-            <label className="desktop-trip-direct">
-              <FormattedMessage id="components.DesktopTrip.direct" />
-              <input type="checkbox" role="switch" disabled />
-            </label>
-          </div>
+          <TripFormControls onPlanTripClick={this.handlePlanTripClick} />
         </div>
 
         {activeSearch && (

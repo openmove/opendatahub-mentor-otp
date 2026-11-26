@@ -2,27 +2,19 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { connect } from 'react-redux'
 import { injectIntl, IntlShape } from 'react-intl'
 import React, { Component } from 'react'
 
-import * as uiActions from '@otp-react-redux/lib/actions/ui'
-import { MobileScreens } from '@otp-react-redux/lib/actions/ui-constants'
-import BatchSettings from '@otp-react-redux/lib/components/form/batch-settings'
 import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import MobileContainer from '@otp-react-redux/lib/components/mobile/container'
-import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
 
 import { ChevronDoubleDown, ChevronDoubleUp } from '../../icons/nav'
+import TripFormControls from '../app/trip-form-controls'
 import DefaultMap from '../map/default-map'
 import MobileNavigationBar from './navigation-bar'
 
-const { SET_FROM_LOCATION, SET_TO_LOCATION } = MobileScreens
-
 interface Props {
   intl: IntlShape
-  map: React.ReactElement
-  setMobileScreen: (screen: number) => void
 }
 
 /**
@@ -38,15 +30,32 @@ class BatchSearchScreen extends Component<Props> {
     planTripClicked: false
   }
 
-  _fromFieldClicked = () => this.props.setMobileScreen(SET_FROM_LOCATION)
+  panel = React.createRef<HTMLDivElement>()
 
-  _toFieldClicked = () => this.props.setMobileScreen(SET_TO_LOCATION)
+  expandedField = () =>
+    this.panel.current?.querySelector<HTMLInputElement>('input[role="combobox"][aria-expanded="true"]')
+
+  closeSuggestions = () => {
+    const field = this.expandedField()
+    if (!field) return false
+
+    field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    field.blur()
+    return true
+  }
 
   handlePlanTripClick = () => {
     this.setState({ planTripClicked: true })
   }
 
+  expandForSearch = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!this.state.expanded && (event.target as HTMLElement).matches('input[role="combobox"]')) {
+      this.setState({ expanded: true }, () => window.dispatchEvent(new Event('resize')))
+    }
+  }
+
   toggleExpanded = () => {
+    if (this.closeSuggestions()) return
     // The map column changes height but the window does not, so the map
     // doesn't notice. A resize event makes it redraw to the new size.
     this.setState({ expanded: !this.state.expanded }, () =>
@@ -66,11 +75,18 @@ class BatchSearchScreen extends Component<Props> {
           })}
         />
         <main tabIndex={-1}>
-          <div className="batch-search-settings mobile-padding">
+          <div
+            className={`batch-search-settings mobile-trip-form${expanded ? ' mobile-trip-form--expanded' : ''}`}
+            onFocusCapture={this.expandForSearch}
+            ref={this.panel}
+          >
             <button
               aria-expanded={expanded}
               className="panel-chevron"
               onClick={this.toggleExpanded}
+              onMouseDown={(event) => {
+                if (this.expandedField()) event.preventDefault()
+              }}
               type="button"
             >
               <Chevron aria-hidden />
@@ -81,7 +97,6 @@ class BatchSearchScreen extends Component<Props> {
               })}
               isRequired
               locationType="from"
-              onTextInputClick={this._fromFieldClicked}
               selfValidate={planTripClicked}
               showClearButton={false}
             />
@@ -91,20 +106,12 @@ class BatchSearchScreen extends Component<Props> {
               })}
               isRequired
               locationType="to"
-              onTextInputClick={this._toFieldClicked}
               selfValidate={planTripClicked}
               showClearButton={false}
             />
-            {expanded && (
-              <>
-                <div className="switch-button-container-mobile">
-                  <SwitchButton />
-                </div>
-                <BatchSettings onPlanTripClick={this.handlePlanTripClick} />
-              </>
-            )}
+            {expanded && <TripFormControls onPlanTripClick={this.handlePlanTripClick} />}
           </div>
-          <div className="batch-search-map">
+          <div className="batch-search-map" onPointerDownCapture={this.closeSuggestions}>
             <DefaultMap />
           </div>
         </main>
@@ -113,10 +120,4 @@ class BatchSearchScreen extends Component<Props> {
   }
 }
 
-// connect to the redux store
-
-const mapDispatchToProps = {
-  setMobileScreen: uiActions.setMobileScreen
-}
-
-export default connect(null, mapDispatchToProps)(injectIntl(BatchSearchScreen))
+export default injectIntl(BatchSearchScreen)
