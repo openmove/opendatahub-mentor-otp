@@ -688,6 +688,8 @@ language:
             destination may be too far apart or not connected for this mode.
         inputFields:
           "null": Location
+      ViewSwitcher:
+        trip: Trip
     otpUi:
       ModeSelector:
         labels:
@@ -1484,6 +1486,7 @@ language:
       ViewSwitcher:
         nearby: Nelle vicinanze
         switcher: Selettore
+        trip: Viaggio
       WelcomeScreen:
         prompt: Dove vuoi andare?
     config:
@@ -2623,6 +2626,7 @@ language:
       ViewSwitcher:
         nearby: In der Nähe
         switcher: Umschalter
+        trip: Reise
       WelcomeScreen:
         prompt: Wohin möchtest du?
     config:

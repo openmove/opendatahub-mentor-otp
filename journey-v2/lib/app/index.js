@@ -31,7 +31,8 @@ import ViewerContainer from '@otp-react-redux/lib/components/viewers/viewer-cont
 import AppMenu from '@otp-react-redux/lib/components/app/app-menu'
 import DesktopNav from '@otp-react-redux/lib/components/app/desktop-nav'
 import BatchResultsScreen from '@otp-react-redux/lib/components/mobile/batch-results-screen'
-import BatchSearchScreen from '@otp-react-redux/lib/components/mobile/batch-search-screen'
+// Local copy of the vendor screen: it adds the Figma bottom panel chevron.
+import BatchSearchScreen from './components/mobile/batch-search-screen'
 import FormattedMode from '@otp-react-redux/lib/components/util/formatted-mode'
 import { setAutoPlan } from '@otp-react-redux/lib/actions/config'
 import { getCurrentPosition } from '@otp-react-redux/lib/actions/location'

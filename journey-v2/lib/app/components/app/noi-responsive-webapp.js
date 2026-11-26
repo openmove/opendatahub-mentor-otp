@@ -42,13 +42,16 @@ import webAppRoutes from '@otp-react-redux/lib/util/webapp-routes'
 import withLoggedInUserSupport from '@otp-react-redux/lib/components/user/with-logged-in-user-support'
 import withMap from '@otp-react-redux/lib/components/map/with-map'
 
-import DesktopNav from '@otp-react-redux/lib/components/app/desktop-nav'
 import PopupWrapper from '@otp-react-redux/lib/components/app/popup'
 import SessionTimeout from '@otp-react-redux/lib/components/app/session-timeout'
 
 import LocationField from '@otp-react-redux/lib/components/form/connected-location-field'
 import PlanningObserver from './planning-observer'
-import { MainPanelContent } from '@otp-react-redux/lib/actions/ui-constants'
+import ViewSwitcher from './view-switcher'
+import {
+  MainPanelContent,
+  MobileScreens
+} from '@otp-react-redux/lib/actions/ui-constants'
 import OnboardingFlow from '../onboarding/OnboardingFlow'
 import AppMenu from './app-menu'
 
@@ -259,8 +262,9 @@ class NoiResponsiveWebapp extends Component {
     if (isWelcomeScreen) {
       return (
         <PlanningProvider>
+          {/* No DesktopNav: the Figma desktop layout has no header. Burger menu
+              and Trip/Nearby switch return in a later task. */}
           <div className="otp">
-            <DesktopNav />
             <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
             <PlanningObserver />
             <Grid>
@@ -283,7 +287,6 @@ class NoiResponsiveWebapp extends Component {
     return (
       <PlanningProvider>
         <div className="otp">
-          <DesktopNav />
           <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
           <PlanningObserver />
           <Grid>
@@ -308,7 +311,18 @@ class NoiResponsiveWebapp extends Component {
   }
 
   renderMobileView = () => {
-    const { popupContent } = this.props
+    const { isViewingStop, mainPanelContent, mobileScreen, popupContent } =
+      this.props
+
+    // The Figma shows the TRIP / NEARBY bar only on the screens that have the
+    // bottom panel: welcome, search form and nearby view. It is rendered here,
+    // once, because the nearby view comes from the vendor and can't hold it.
+    const showViewSwitcher =
+      mainPanelContent === MainPanelContent.NEARBY_VIEW ||
+      (mainPanelContent === null &&
+        !isViewingStop &&
+        (mobileScreen === MobileScreens.WELCOME_SCREEN ||
+          mobileScreen === MobileScreens.SEARCH_FORM))
 
     return (
       <PlanningProvider>
@@ -316,6 +330,11 @@ class NoiResponsiveWebapp extends Component {
           <PopupWrapper content={popupContent} hideModal={this._hidePopup} />
           <PlanningObserver />
           <MobileMain />
+          {showViewSwitcher && (
+            <div className="mobile-view-switcher">
+              <ViewSwitcher />
+            </div>
+          )}
         </>
       </PlanningProvider>
     )
