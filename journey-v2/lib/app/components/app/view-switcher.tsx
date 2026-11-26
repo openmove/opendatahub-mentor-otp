@@ -7,12 +7,15 @@ import React from 'react'
 
 import Link from '@otp-react-redux/lib/components/util/link'
 
+import { ArrowRouting, CompassNorthwest } from '../../icons/nav'
+
 type Props = {
   sticky?: boolean
 }
 
 /**
- * Custom ViewSwitcher without route viewer link.
+ * Custom ViewSwitcher without route viewer link. It is the TRIP / NEARBY
+ * "Navigation tab" of the Figma: an icon above a short label in each tab.
  */
 const ViewSwitcher = ({ sticky }: Props) => {
   const intl = useIntl()
@@ -36,9 +39,13 @@ const ViewSwitcher = ({ sticky }: Props) => {
       }
     >
       <Link to="/" tracking>
-        <FormattedMessage id="components.BatchRoutingPanel.shortTitle" />
+        <ArrowRouting aria-hidden />
+        {/* "Plan Trip" (BatchRoutingPanel.shortTitle) is too long for the
+            44px tab, so the tab has its own short label. */}
+        <FormattedMessage id="components.ViewSwitcher.trip" />
       </Link>
       <Link to="/nearby" tracking>
+        <CompassNorthwest aria-hidden />
         <FormattedMessage id="components.ViewSwitcher.nearby" />
       </Link>
     </div>

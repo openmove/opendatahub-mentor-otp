@@ -689,20 +689,26 @@ input[type="text"]::-ms-clear {
 /* Mobile welcome screen: the destination field ("Where do you want to go?")
    sits at the bottom, like the bottom panel in the Figma Tab trip screen,
    and the map fills the space above it so its controls stay reachable. The
-   `main` in the selector is what wins over the vendor's mobile.css. */
+   `main` in the selector is what wins over the vendor's mobile.css.
+   The panel also holds the chevron above the field and leaves room under it
+   for the TRIP / NEARBY bar (56px + 15px from the bottom + a gap). */
+$mobile-welcome-panel-height: 164px;
+
 @media only screen and (max-width: 768px) {
   .otp.mobile main .welcome-location {
     background: #ffffff;
+    border: 1px solid #e3e4e7;
+    border-radius: 8px 8px 0 0;
     bottom: 0;
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.12);
-    height: 76px;
-    padding-top: 8px;
+    height: $mobile-welcome-panel-height;
+    padding-top: 5px;
     top: auto;
     z-index: 10;
   }
 
   .otp.mobile main .welcome-map {
-    bottom: 76px;
+    bottom: $mobile-welcome-panel-height;
     top: 0;
   }
 
@@ -727,9 +733,14 @@ input[type="text"]::-ms-clear {
 
   .otp.mobile main .batch-search-settings {
     background: #ffffff;
+    border: 1px solid #e3e4e7;
+    border-radius: 8px 8px 0 0;
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.12);
     height: auto;
     order: 1;
+    /* Room for the TRIP / NEARBY bar, which floats over the panel's bottom. */
+    padding-bottom: 95px;
+    padding-top: 5px;
     position: relative;
     top: auto;
   }
@@ -779,6 +790,89 @@ input[type="text"]::-ms-clear {
     width: 161px;
     z-index: 2;
   }
+}
+
+/* Chevron at the top of the mobile bottom panel (Figma: 29x28, centred, 5px
+   from the top). It collapses / expands the panel. */
+@media only screen and (max-width: 768px) {
+  .panel-chevron {
+    background: none;
+    border: 0;
+    color: #000000;
+    display: block;
+    height: 28px;
+    margin: 0 auto;
+    padding: 0;
+    width: 29px;
+  }
+
+  /* TRIP / NEARBY bar from the Figma "Navigation tab": 106x56, white, 1px
+     #e3e4e7 border, 8px radius, centred 15px from the bottom. The tabs are
+     44x44 with 6px around them; the active one is green (#50742f on #edf1ea).
+     It is under the app menu (z-index 1000) but over the panels (999). The
+     wrapper selector wins over the vendor .view-switcher styles, which are
+     made for the white-on-dark desktop header. */
+  .mobile-view-switcher {
+    bottom: 15px;
+    left: 50%;
+    position: fixed;
+    transform: translateX(-50%);
+    z-index: 999;
+  }
+
+  /* The nearby view is vendor and scrolls with the page, so its last cards
+     would end up under the bar: leave the same 95px the panels leave. */
+  .otp.mobile.nearby-view {
+    padding-bottom: 95px;
+  }
+
+  .mobile-view-switcher .view-switcher {
+    background: #ffffff;
+    border: 1px solid #e3e4e7;
+    border-radius: 8px;
+    box-sizing: border-box;
+    /* The app hides .view-switcher below 768px (it was the desktop header
+       switch), so this has to turn it back on. */
+    display: flex;
+    gap: 6px;
+    height: 56px;
+    padding: 5px;
+    width: 106px;
+  }
+
+  .mobile-view-switcher .view-switcher a,
+  .mobile-view-switcher .view-switcher a:hover,
+  .mobile-view-switcher .view-switcher a:focus {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #000000;
+    display: flex;
+    flex-direction: column;
+    font-size: 8px;
+    font-weight: 600;
+    height: 44px;
+    line-height: 10px;
+    padding: 3px 0 0;
+    text-transform: uppercase;
+    width: 44px;
+  }
+
+  .mobile-view-switcher .view-switcher a.active,
+  .mobile-view-switcher .view-switcher a.active:hover,
+  .mobile-view-switcher .view-switcher a.active:focus {
+    background: #edf1ea;
+    border-color: #50742f;
+    color: #50742f;
+  }
+}
+
+/* No desktop header (the Figma desktop has none): example.css leaves 52px at
+   the top of .main-row for it, so the sidebar and the map start at the top. */
+.otp .main-row {
+  top: 0;
 }
 
 .slide-pane {

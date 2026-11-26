@@ -220,6 +220,19 @@ module.exports = {
             )
           }
         ),
+        // The vendor MobileMain imports its welcome screen directly instead
+        // of taking it from the app context, so a plain import can't swap it.
+        // Point it at our copy, which has the Figma bottom panel chevron.
+        new webpack.NormalModuleReplacementPlugin(
+          /(^|\/)welcome-screen$/,
+          (resource) => {
+            if (!resource.context.includes('otp-react-redux')) return
+            resource.request = path.resolve(
+              __dirname,
+              'lib/app/components/mobile/welcome-screen'
+            )
+          }
+        ),
         // Route the vendor imports of actions/apiV2 to our module, which moves
         // single calls from OTP GraphQL to OJP. Only the relative requests made
         // inside the vendor code match: our module imports the original through
