@@ -1,4 +1,4 @@
-import { ChevronLeft } from '@styled-icons/fa-solid/ChevronLeft'
+import { ChevronLeft, Times } from '@styled-icons/fa-solid'
 import { Star as EmptyStar } from '@styled-icons/fa-regular/Star'
 import { Star } from '@styled-icons/fa-solid/Star'
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -145,6 +145,9 @@ export default function SearchFavoritesPanel({ onBack, onClose }: {
           <ChevronLeft size={16} aria-hidden="true" />
         </Back>
         <h2 id="search-favorites-title">{message('title')}</h2>
+        <Back className="journey-menu-close" type="button" aria-label={message('close')} onClick={onClose}>
+          <Times size={20} aria-hidden="true" />
+        </Back>
       </header>
       {favorites?.favorites.length ? (
         <ul>

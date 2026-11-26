@@ -660,6 +660,13 @@ language:
       modes:
         airplane: Airplane
     components:
+      JourneyMenu:
+        language: "Language"
+        restart: "Restart"
+        preferences: "User preferences"
+        about: "About us"
+        terms: "Terms and conditions"
+        privacy: "Privacy and cookie policy"
       SearchFavorites:
         limit: "You can save up to 5 favourites."
         addTitle: "Add"
@@ -893,6 +900,13 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      JourneyMenu:
+        language: "Lingua"
+        restart: "Ricomincia"
+        preferences: "Preferenze utente"
+        about: "Chi siamo"
+        terms: "Termini e condizioni"
+        privacy: "Privacy e cookie"
       SearchFavorites:
         limit: "Puoi salvare al massimo 5 preferiti."
         addTitle: "Aggiungi"
@@ -2024,6 +2038,13 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      JourneyMenu:
+        language: "Sprache"
+        restart: "Neu starten"
+        preferences: "Benutzereinstellungen"
+        about: "Über uns"
+        terms: "Nutzungsbedingungen"
+        privacy: "Datenschutz und Cookies"
       SearchFavorites:
         limit: "Du kannst bis zu 5 Favoriten speichern."
         addTitle: "Hinzufügen"

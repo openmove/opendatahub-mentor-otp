@@ -2,16 +2,15 @@
 //
 // SPDX-License-Identifier: MIT
 
+import { ChevronLeft, Times } from '@styled-icons/fa-solid'
 import { connect } from 'react-redux'
 import { Envelope } from '@styled-icons/fa-regular/Envelope'
 import { ExternalLinkSquareAlt } from '@styled-icons/fa-solid/ExternalLinkSquareAlt'
 import { FormattedMessage, injectIntl } from 'react-intl'
-import { GlobeAmericas, MapMarked, MapPin } from '@styled-icons/fa-solid'
+import { MapMarked, MapPin } from '@styled-icons/fa-solid'
 import { GraduationCap } from '@styled-icons/fa-solid/GraduationCap'
 import { History } from '@styled-icons/fa-solid/History'
-import { Star } from '@styled-icons/fa-regular/Star'
-import { Undo } from '@styled-icons/fa-solid/Undo'
-import React, { Component, Fragment, useContext } from 'react'
+import React, { Component, useContext } from 'react'
 import SlidingPane from 'react-sliding-pane'
 import type { WrappedComponentProps } from 'react-intl'
 
@@ -26,7 +25,15 @@ import { isModuleEnabled, Modules } from '@otp-react-redux/lib/util/config'
 
 import AppMenuItem from '@otp-react-redux/lib/components/app/app-menu-item'
 import PopupTriggerText from '@otp-react-redux/lib/components/app/popup-trigger-text'
+import ConnectedSettingsSelectorPanel from '@otp-react-redux/lib/components/form/connected-settings-selector-panel'
+import logo from '../../../../branding/opendatahub/map-logo.svg'
 import SearchFavoritesPanel from './search-favorites-panel'
+
+const menuLanguages = [
+  { locale: 'it', label: 'Italiano (IT)' },
+  { locale: 'en-US', label: 'English (EN)' },
+  { locale: 'de', label: 'Deutsch (DE)' }
+]
 
 type MenuItem = {
   children?: MenuItem[]
@@ -57,10 +64,11 @@ type AppMenuProps = {
   setPopupContent: (url: string) => void
   startOverFromInitialUrl: () => void
   toggleMailables: () => void
+  termsOfServiceLink?: string
 }
 type AppMenuState = {
   isPaneOpen: boolean
-  showFavorites: boolean
+  view: 'menu' | 'favorites' | 'language' | 'preferences'
 }
 
 /**
@@ -74,10 +82,11 @@ class AppMenu extends Component<
 
   state = {
     isPaneOpen: false,
-    showFavorites: false
+    view: 'menu'
   }
 
   _startOver = () => {
+    this._closePane()
     this.props.startOverFromInitialUrl()
   }
 
@@ -88,16 +97,23 @@ class AppMenu extends Component<
 
   _togglePane = () => {
     const { isPaneOpen } = this.state
-    this.setState({ isPaneOpen: !isPaneOpen, showFavorites: false })
+    this.setState({ isPaneOpen: !isPaneOpen, view: 'menu' })
   }
 
-  _backFromFavorites = () => {
-    this.setState({ showFavorites: false }, () => {
-      document.getElementById('app-menu-favorites')?.focus()
+  _backToMenu = () => {
+    const { view } = this.state
+    this.setState({ view: 'menu' }, () => {
+      document.getElementById(`app-menu-${view}`)?.focus()
     })
   }
 
-  _closePane = () => this.setState({ isPaneOpen: false, showFavorites: false })
+  _closePane = () => this.setState({ isPaneOpen: false, view: 'menu' })
+
+  _openView = (view: AppMenuState['view']) => {
+    this.setState({ view }, () => {
+      document.getElementById('app-menu-section-back')?.focus()
+    })
+  }
 
   _handleSkipNavigation = () => {
     document.querySelector('main')?.focus()
@@ -163,29 +179,23 @@ class AppMenu extends Component<
       resetAndToggleCallHistory,
       resetAndToggleFieldTrips,
       setLocale,
-      toggleMailables
+      toggleMailables,
+      termsOfServiceLink
     } = this.props
-    const languageMenuItems: MenuItem[] | null = languageOptions && [
-      {
-        children: Object.keys(languageOptions).map((locale: string) => ({
-          iconType: <svg />,
-          id: locale,
-          isSelected: activeLocale === locale,
-          label: languageOptions[locale].name,
-          lang: locale,
-          onClick: () => setLocale(locale),
-          skipLocales: true,
-          subMenuDivider: false
-        })),
-        iconType: <GlobeAmericas />,
-        id: 'app-menu-locale-selector',
-        label: <FormattedMessage id="components.SubNav.languageSelector" />,
-        skipLocales: true,
-        subMenuDivider: false
-      }
-    ]
-
-    const { isPaneOpen, showFavorites } = this.state
+    const { isPaneOpen, view } = this.state
+    const message = (key: string) => intl.formatMessage({ id: `components.JourneyMenu.${key}` })
+    const favoritesTitle = intl.formatMessage({ id: 'components.SearchFavorites.title' })
+    const languageTitle = message('language')
+    const availableMenuLanguages = menuLanguages.filter(({ locale }) => languageOptions?.[locale])
+    const infoItems = [
+      { id: 'about', label: message('about') },
+      { id: 'terms', label: message('terms'), href: termsOfServiceLink?.replace('{locale}', activeLocale) },
+      { id: 'privacy', label: message('privacy') }
+    ].map((item) => ({
+      ...item,
+      href: item.href || extraMenuItems?.find(({ id }) => id === item.id)?.href
+    }))
+    const otherMenuItems = extraMenuItems?.filter(({ id }) => !infoItems.some((item) => item.id === id))
     const { SvgIcon } = this.context
     const buttonLabel = isPaneOpen
       ? intl.formatMessage({ id: 'components.AppMenu.closeMenu' })
@@ -203,6 +213,7 @@ class AppMenu extends Component<
           <FormattedMessage id="components.AppMenu.skipNavigation" />
         </button>
         <button
+          type="button"
           aria-controls="app-menu"
           aria-expanded={isPaneOpen}
           aria-label={buttonLabel}
@@ -214,89 +225,124 @@ class AppMenu extends Component<
           <Bar className="menu-line bottom" />
         </button>
         <SlidingPane
-          className={showFavorites ? 'app-menu-favorites-pane' : undefined}
+          className="journey-menu-pane"
           from="left"
           hideHeader
           isOpen={isPaneOpen}
           onRequestClose={this._closePane}
           shouldCloseOnEsc
-          width={showFavorites ? 'min(100vw, 393px)' : '320px'}
+          width="min(100vw, 393px)"
         >
-          {showFavorites ? (
-            <SearchFavoritesPanel onBack={this._backFromFavorites} onClose={this._closePane} />
+          {view === 'favorites' ? (
+            <SearchFavoritesPanel onBack={this._backToMenu} onClose={this._closePane} />
           ) : (
-            <div className="app-menu" id="app-menu">
-              {/* This item is duplicated by the view-switcher, but only shown on mobile
-              when the view switcher isn't shown (using css) */}
-              <AppMenuItem
-                className="app-menu-trip-planner-link"
-                icon={<MapMarked />}
-                onClick={this._togglePane}
-                text={intl.formatMessage({
-                  id: 'components.BatchRoutingPanel.shortTitle'
-                })}
-                to="/"
-              />
-              {/* This item is duplicated by the view-switcher, but only shown on mobile
-              when the view switcher isn't shown (using css) */}
-              <AppMenuItem
-                className="app-menu-nearby-viewer-link"
-                icon={<MapPin />}
-                onClick={this._togglePane}
-                text={intl.formatMessage({
-                  id: 'components.ViewSwitcher.nearby'
-                })}
-                to="/nearby"
-              />
-              <AppMenuItem
-                icon={<Undo />}
-                onClick={this._startOver}
-                text={intl.formatMessage({
-                  id: 'common.forms.startOver'
-                })}
-              />
-              {popupTarget && (
-                <AppMenuItem
-                  icon={<SvgIcon iconName={popupTarget} />}
-                  onClick={this._triggerPopup}
-                  text={<PopupTriggerText popupTarget={popupTarget} />}
-                />
+            <div id="app-menu">
+              <header className="journey-menu-header">
+                {view === 'menu' ? (
+                  <img src={logo} width="161" height="42" alt="Journey Planner - Open Data Hub" />
+                ) : (
+                  <>
+                    <button id="app-menu-section-back" type="button" onClick={this._backToMenu} aria-label={intl.formatMessage({ id: 'common.forms.back' })}>
+                      <ChevronLeft size={20} aria-hidden="true" />
+                    </button>
+                    <h2>{view === 'language' ? languageTitle : message('preferences')}</h2>
+                  </>
+                )}
+                <button className="journey-menu-close" type="button" onClick={this._closePane} aria-label={intl.formatMessage({ id: 'components.AppMenu.closeMenu' })}>
+                  <Times size={22} aria-hidden="true" />
+                </button>
+              </header>
+              {view === 'language' && (
+                <div className="journey-menu-languages" role="radiogroup" aria-label={languageTitle}>
+                  {availableMenuLanguages.map(({ locale, label }) => (
+                    <label key={locale} lang={locale}>
+                      <input
+                        type="radio"
+                        name="journey-menu-language"
+                        value={locale}
+                        checked={activeLocale === locale}
+                        onChange={() => setLocale(locale)}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
               )}
-              {callTakerEnabled && (
-                <AppMenuItem
-                  icon={<History />}
-                  onClick={resetAndToggleCallHistory}
-                  text={intl.formatMessage({
-                    id: 'components.AppMenu.callHistory'
-                  })}
-                />
+              {view === 'preferences' && (
+                <div className="journey-menu-preferences"><ConnectedSettingsSelectorPanel /></div>
               )}
-              {fieldTripEnabled && (
-                <AppMenuItem
-                  icon={<GraduationCap />}
-                  onClick={resetAndToggleFieldTrips}
-                  text={intl.formatMessage({
-                    id: 'components.AppMenu.fieldTrip'
-                  })}
-                />
+              {view === 'menu' && (
+                <nav className="app-menu journey-menu-list" aria-label={buttonLabel}>
+                  <AppMenuItem onClick={this._startOver} text={message('restart')} />
+                  <AppMenuItem id="app-menu-preferences" onClick={() => this._openView('preferences')} text={message('preferences')} />
+                  {availableMenuLanguages.length > 0 && (
+                    <AppMenuItem id="app-menu-language" onClick={() => this._openView('language')} text={languageTitle} />
+                  )}
+                  <AppMenuItem id="app-menu-favorites" onClick={() => this._openView('favorites')} text={favoritesTitle} />
+                  {infoItems.map(({ id, href, label }) => href ? (
+                    <AppMenuItem key={id} href={href} onClick={this._closePane} text={label} />
+                  ) : (
+                    <button key={id} type="button" disabled>{label}</button>
+                  ))}
+                  {/* This item is duplicated by the view-switcher, but only shown on mobile
+                  when the view switcher isn't shown (using css) */}
+                  <AppMenuItem
+                    className="app-menu-trip-planner-link"
+                    icon={<MapMarked />}
+                    onClick={this._togglePane}
+                    text={intl.formatMessage({
+                      id: 'components.BatchRoutingPanel.shortTitle'
+                    })}
+                    to="/"
+                  />
+                  {/* This item is duplicated by the view-switcher, but only shown on mobile
+                  when the view switcher isn't shown (using css) */}
+                  <AppMenuItem
+                    className="app-menu-nearby-viewer-link"
+                    icon={<MapPin />}
+                    onClick={this._togglePane}
+                    text={intl.formatMessage({
+                      id: 'components.ViewSwitcher.nearby'
+                    })}
+                    to="/nearby"
+                  />
+                  {popupTarget && (
+                    <AppMenuItem
+                      icon={<SvgIcon iconName={popupTarget} />}
+                      onClick={this._triggerPopup}
+                      text={<PopupTriggerText popupTarget={popupTarget} />}
+                    />
+                  )}
+                  {callTakerEnabled && (
+                    <AppMenuItem
+                      icon={<History />}
+                      onClick={resetAndToggleCallHistory}
+                      text={intl.formatMessage({
+                        id: 'components.AppMenu.callHistory'
+                      })}
+                    />
+                  )}
+                  {fieldTripEnabled && (
+                    <AppMenuItem
+                      icon={<GraduationCap />}
+                      onClick={resetAndToggleFieldTrips}
+                      text={intl.formatMessage({
+                        id: 'components.AppMenu.fieldTrip'
+                      })}
+                    />
+                  )}
+                  {mailablesEnabled && (
+                    <AppMenuItem
+                      icon={<Envelope />}
+                      onClick={toggleMailables}
+                      text={intl.formatMessage({
+                        id: 'components.AppMenu.mailables'
+                      })}
+                    />
+                  )}
+                  {this._addExtraMenuItems(otherMenuItems)}
+                </nav>
               )}
-              {mailablesEnabled && (
-                <AppMenuItem
-                  icon={<Envelope />}
-                  onClick={toggleMailables}
-                  text={intl.formatMessage({
-                    id: 'components.AppMenu.mailables'
-                  })}
-                />
-              )}
-              {this._addExtraMenuItems(extraMenuItems)}
-              {this._addExtraMenuItems(languageMenuItems)}
-              <AppMenuItem
-                id="app-menu-favorites"
-                icon={<Star />}
-                onClick={() => this.setState({ showFavorites: true })}
-                text={intl.formatMessage({ id: 'components.SearchFavorites.title' })}
-              />
             </div>
           )}
         </SlidingPane>
@@ -308,7 +354,7 @@ class AppMenu extends Component<
 // connect to the redux store
 
 const mapStateToProps = (state: AppReduxState) => {
-  const { extraMenuItems, language, popups } = state.otp.config
+  const { extraMenuItems, language, popups, termsOfServiceLink } = state.otp.config
   return {
     activeLocale: state.otp.ui.locale,
     callTakerEnabled: isModuleEnabled(state, Modules.CALL_TAKER),
@@ -317,7 +363,8 @@ const mapStateToProps = (state: AppReduxState) => {
     language,
     languageOptions: getLanguageOptions(language),
     mailablesEnabled: isModuleEnabled(state, Modules.MAILABLES),
-    popupTarget: popups?.launchers?.sidebarLink
+    popupTarget: popups?.launchers?.sidebarLink,
+    termsOfServiceLink
   }
 }
 
