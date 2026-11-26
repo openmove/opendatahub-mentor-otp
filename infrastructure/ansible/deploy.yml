@@ -20,6 +20,8 @@
             remote: docker-compose.yml
           - local: ../docker-compose.otp.run.yml
             remote: docker-compose.otp.yml
+          - local: ../prometheus/prometheus.yml
+            remote: prometheus.yml
           - local: ../../.env
             remote: .env
         docker_deployment_post_release_setup_hook: '{{ playbook_dir }}/pull-otp.yml'
@@ -28,4 +30,11 @@
     - name: Start Traefik in front of OTP
       ansible.builtin.command:
         cmd: docker compose --project-name {{ project_name }}-otp --file docker-compose.otp.yml up --detach traefik
+        chdir: /var/docker/{{ project_name }}/current
+
+    # Recreated on every release: its config is bind-mounted from the release directory, so a
+    # running container would keep reading the previous release's prometheus.yml.
+    - name: Start Prometheus
+      ansible.builtin.command:
+        cmd: docker compose --project-name {{ project_name }}-otp --file docker-compose.otp.yml up --detach --force-recreate prometheus
         chdir: /var/docker/{{ project_name }}/current

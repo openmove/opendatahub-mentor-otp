@@ -48,7 +48,24 @@ services:
       - traefik.http.middlewares.otp-retry.retry.attempts=3
       - traefik.http.services.otp.loadbalancer.server.port=8080
 
+  # Scrapes every otp replica (see prometheus.yml). Lives in this project, not the main one, so it
+  # shares otp's network and survives releases; the deploy playbook recreates it to load the
+  # release's prometheus.yml.
+  prometheus:
+    image: docker.io/prom/prometheus:v3.16.0
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=180d
+    ports:
+      - ${SERVER_PORT_PROMETHEUS}:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+
 volumes:
+  prometheus:
   # Shared with the main project's otp-graph-build, which publishes into it.
   otp-graph:
     name: otp-graph

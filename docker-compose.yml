@@ -112,7 +112,18 @@ services:
     volumes:
        - carsharing-gbfs:/usr/share/nginx/html
 
+  prometheus:
+    image: docker.io/prom/prometheus:v3.16.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    depends_on:
+      - otp
+
 volumes:
+  prometheus:
   carsharing-gbfs:
   graphhopper:
   # Pinned: otp-docker.sh passes this name to the host's daemon, which resolves it there.
