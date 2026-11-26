@@ -964,7 +964,45 @@ input[type="text"]::-ms-clear {
 }
 
 .journey-menu-preferences {
-  padding: 16px;
+  padding: 8px 16px;
+}
+
+.journey-preference {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+
+  input[type='checkbox'] {
+    appearance: none;
+    flex: 0 0 36px;
+    height: 20px;
+    margin: 0;
+    border: 1px solid #e1e2e4;
+    border-radius: 12px;
+    background: radial-gradient(circle, #000 0 5px, transparent 6px) left 2px center / 14px 14px no-repeat #fff;
+    cursor: pointer;
+  }
+
+  input:checked {
+    border-color: #4e702d;
+    background: radial-gradient(circle, #4e702d 0 5px, transparent 6px) right 2px center / 14px 14px no-repeat #ebf0e8;
+  }
+
+  input:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  input:focus-visible {
+    outline: 2px solid #4e702d;
+    outline-offset: 2px;
+  }
 }
 
 .slide-pane__overlay {

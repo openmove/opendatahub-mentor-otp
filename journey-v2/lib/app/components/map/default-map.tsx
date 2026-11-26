@@ -40,6 +40,7 @@ import OTPVectorLayer from './custom-otp-layers';
 import ElevationPointMarker from '@otp-react-redux/lib/components/map/elevation-point-marker'
 import EndpointsOverlay from '@otp-react-redux/lib/components/map/connected-endpoints-overlay'
 import TaxiLayer from './taxi-layer'
+import { JourneyPreferencesContext } from '../../context/journey-preferences-context'
 import ChargerOverlay from './charger-layer'
 import GeoJsonLayer from '@otp-react-redux/lib/components/map/connected-geojson-layer'
 import ItinSummaryOverlay from '@otp-react-redux/lib/components/map/itinerary-summary-overlay'
@@ -379,7 +380,11 @@ class DefaultMap extends Component {
             switch (overlayConfig.type) {
               case 'taxi_noi':
                 return (
-                  <TaxiLayer {...namedLayerProps} url={overlayConfig.url} />
+                  <JourneyPreferencesContext.Consumer key={k}>
+                    {({ onDemandServices }) => onDemandServices && overlayConfig.url && (
+                      <TaxiLayer visible url={overlayConfig.url} />
+                    )}
+                  </JourneyPreferencesContext.Consumer>
                 )
               case 'charger':
                 return (

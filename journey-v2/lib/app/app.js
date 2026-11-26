@@ -23,6 +23,7 @@ import React, { useContext, useMemo } from 'react'
 import { GeocodedOptionActionContext } from '@opentripplanner/location-field'
 import SearchFavoriteButton from './components/app/search-favorite-button'
 import { favoriteFromSearchFeature, SearchFavoritesContext, SearchFavoritesProvider } from './context/search-favorites-context'
+import { JourneyPreferencesProvider } from './context/journey-preferences-context'
 
 
 // import OTP-RR components
@@ -238,7 +239,9 @@ const Webapp = () => (
   <ErrorBoundary>
     <SearchFavoritesProvider>
       <SearchFavoriteOptions>
-        <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
+        <JourneyPreferencesProvider>
+          <NoiResponsiveWebapp components={{ ...components, ...jsConfig }} />
+        </JourneyPreferencesProvider>
       </SearchFavoriteOptions>
     </SearchFavoritesProvider>
   </ErrorBoundary>

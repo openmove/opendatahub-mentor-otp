@@ -661,6 +661,10 @@ language:
         airplane: Airplane
     components:
       JourneyMenu:
+        technicalCookies: "Technical cookies"
+        weather: "Weather widget"
+        privateHire: "Private hire vehicles"
+        onDemandServices: "On-demand services"
         language: "Language"
         restart: "Restart"
         preferences: "User preferences"
@@ -901,6 +905,10 @@ language:
           plural, =0 {} other {# sec}}"
     components:
       JourneyMenu:
+        technicalCookies: "Cookie tecnici"
+        weather: "Widget meteo"
+        privateHire: "Veicoli NCC"
+        onDemandServices: "Servizi a chiamata"
         language: "Lingua"
         restart: "Ricomincia"
         preferences: "Preferenze utente"
@@ -2039,6 +2047,10 @@ language:
           seconds, plural, =0 {} other {# Sek}}"
     components:
       JourneyMenu:
+        technicalCookies: "Technische Cookies"
+        weather: "Wetter-Widget"
+        privateHire: "Mietwagen mit Fahrer"
+        onDemandServices: "Bedarfsverkehr"
         language: "Sprache"
         restart: "Neu starten"
         preferences: "Benutzereinstellungen"

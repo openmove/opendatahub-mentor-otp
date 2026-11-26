@@ -25,9 +25,9 @@ import { isModuleEnabled, Modules } from '@otp-react-redux/lib/util/config'
 
 import AppMenuItem from '@otp-react-redux/lib/components/app/app-menu-item'
 import PopupTriggerText from '@otp-react-redux/lib/components/app/popup-trigger-text'
-import ConnectedSettingsSelectorPanel from '@otp-react-redux/lib/components/form/connected-settings-selector-panel'
 import logo from '../../../../branding/opendatahub/map-logo.svg'
 import SearchFavoritesPanel from './search-favorites-panel'
+import UserPreferencesPanel from './user-preferences-panel'
 
 const menuLanguages = [
   { locale: 'it', label: 'Italiano (IT)' },
@@ -269,7 +269,7 @@ class AppMenu extends Component<
                 </div>
               )}
               {view === 'preferences' && (
-                <div className="journey-menu-preferences"><ConnectedSettingsSelectorPanel /></div>
+                <UserPreferencesPanel />
               )}
               {view === 'menu' && (
                 <nav className="app-menu journey-menu-list" aria-label={buttonLabel}>
