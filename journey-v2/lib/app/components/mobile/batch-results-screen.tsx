@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { getActiveSearch } from '@otp-react-redux/lib/util/state'
+import {
+  getActiveItineraries,
+  getActiveSearch
+} from '@otp-react-redux/lib/util/state'
 import { useIntl } from 'react-intl'
 import { useMap } from 'react-map-gl'
 import { useSelector } from 'react-redux'
@@ -13,8 +16,17 @@ import VendorBatchResultsScreen from '@otp-react-redux/lib/components/mobile/bat
 import { ChevronDoubleDown, ChevronDoubleUp } from '../../icons/nav'
 import DefaultMap from '../map/default-map'
 import TripSearchLoading from '../app/trip-search-loading'
+import TripSearchResults, {
+  TripResultsMapSummary
+} from '../app/trip-search-results'
 
-function MobileTripSearchLoading() {
+function MobileTripSearchPanel({
+  pending,
+  searchId
+}: {
+  pending: boolean
+  searchId: string
+}) {
   const [expanded, setExpanded] = useState(true)
   const { default: map } = useMap()
   const intl = useIntl()
@@ -29,14 +41,15 @@ function MobileTripSearchLoading() {
       <main className="mobile-trip-search-loading">
         <div className="batch-search-map">
           <DefaultMap />
+          {!pending && <TripResultsMapSummary />}
         </div>
         <div className="mobile-trip-search-loading-panel">
           <button
             aria-controls="mobile-trip-search-progress"
             aria-expanded={expanded}
             aria-label={intl.formatMessage({
-              defaultMessage: "We're looking for the best options...",
-              id: 'components.TripSearchLoading.message'
+              defaultMessage: 'Trip options',
+              id: 'components.TripSearchResults.options'
             })}
             className="panel-chevron"
             onClick={() => setExpanded(!expanded)}
@@ -45,7 +58,11 @@ function MobileTripSearchLoading() {
             <Chevron aria-hidden />
           </button>
           <div hidden={!expanded} id="mobile-trip-search-progress">
-            <TripSearchLoading />
+            {pending ? (
+              <TripSearchLoading />
+            ) : (
+              <TripSearchResults key={searchId} mobile />
+            )}
           </div>
         </div>
       </main>
@@ -55,8 +72,14 @@ function MobileTripSearchLoading() {
 
 export default function BatchResultsScreen() {
   const activeSearch = useSelector(getActiveSearch)
-  return activeSearch?.pending > 0 ? (
-    <MobileTripSearchLoading />
+  const itineraries = useSelector(getActiveItineraries)
+  const searchId = useSelector((state: any) => state.otp.activeSearchId)
+  return activeSearch &&
+    (activeSearch.pending > 0 || itineraries.length > 0) ? (
+    <MobileTripSearchPanel
+      pending={activeSearch.pending > 0}
+      searchId={searchId}
+    />
   ) : (
     <VendorBatchResultsScreen />
   )

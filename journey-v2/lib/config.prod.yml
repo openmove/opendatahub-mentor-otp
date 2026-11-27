@@ -710,6 +710,25 @@ language:
       modes:
         airplane: Airplane
     components:
+      TripSearchResults:
+        arrival: "Arrival {time}"
+        back: "Back to search"
+        calories: "{count} kcal"
+        carbon: "CO₂ {count} kg"
+        departure: "Departure {time}"
+        details: "Detailed view"
+        duration: "Travel time"
+        edit: "Edit trip"
+        leaveNow: "Leave now"
+        modes: "Filter by transport"
+        options: "Trip options"
+        sort: "Sort routes"
+        sortArrival: "Arrival time"
+        sortBest: "Recommended"
+        sortDeparture: "Departure time"
+        sortDuration: "Travel time"
+        stops: "{count, plural, one {# stop} other {# stops}}"
+        verify: "Verify this option"
       TripSearchLoading:
         message: "We're looking for the best options..."
       TripCalendar:
@@ -978,6 +997,25 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      TripSearchResults:
+        arrival: "Arrivo {time}"
+        back: "Torna alla ricerca"
+        calories: "{count} kcal"
+        carbon: "CO₂ {count} kg"
+        departure: "Partenza {time}"
+        details: "Vista dettagliata"
+        duration: "Durata del viaggio"
+        edit: "Modifica viaggio"
+        leaveNow: "Parti ora"
+        modes: "Filtra per mezzo di trasporto"
+        options: "Opzioni di viaggio"
+        sort: "Ordina itinerari"
+        sortArrival: "Ora di arrivo"
+        sortBest: "Consigliati"
+        sortDeparture: "Ora di partenza"
+        sortDuration: "Durata del viaggio"
+        stops: "{count, plural, one {# fermata} other {# fermate}}"
+        verify: "Verifica questa opzione"
       TripSearchLoading:
         message: "Stiamo cercando le opzioni migliori..."
       TripCalendar:
@@ -2143,6 +2181,25 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      TripSearchResults:
+        arrival: "Ankunft {time}"
+        back: "Zurück zur Suche"
+        calories: "{count} kcal"
+        carbon: "CO₂ {count} kg"
+        departure: "Abfahrt {time}"
+        details: "Detailansicht"
+        duration: "Fahrzeit"
+        edit: "Fahrt bearbeiten"
+        leaveNow: "Jetzt abfahren"
+        modes: "Nach Verkehrsmittel filtern"
+        options: "Fahrtoptionen"
+        sort: "Routen sortieren"
+        sortArrival: "Ankunftszeit"
+        sortBest: "Empfohlen"
+        sortDeparture: "Abfahrtszeit"
+        sortDuration: "Fahrzeit"
+        stops: "{count, plural, one {# Halt} other {# Halte}}"
+        verify: "Diese Option prüfen"
       TripSearchLoading:
         message: "Wir suchen nach den besten Optionen..."
       TripCalendar:

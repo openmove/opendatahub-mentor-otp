@@ -45,6 +45,7 @@ import PopupWrapper from '@otp-react-redux/lib/components/app/popup'
 import SessionTimeout from '@otp-react-redux/lib/components/app/session-timeout'
 
 import PlanningObserver from './planning-observer'
+import { TripResultsMapSummary } from './trip-search-results'
 import ViewSwitcher from './view-switcher'
 import {
   MainPanelContent,
@@ -227,7 +228,7 @@ class NoiResponsiveWebapp extends Component {
   }
 
   renderDesktopView = () => {
-    const { popupContent, sessionTimeoutSeconds } = this.props
+    const { isViewingStop, mainPanelContent, popupContent, sessionTimeoutSeconds } = this.props
     const { MainControls, MainPanel, MapWindows } = this.context
 
     return (
@@ -251,6 +252,7 @@ class NoiResponsiveWebapp extends Component {
             {MainControls && <MainControls />}
             {MapWindows && <MapWindows />}
             <Map />
+            {!mainPanelContent && !isViewingStop && <TripResultsMapSummary />}
           </div>
           {sessionTimeoutSeconds && <SessionTimeout />}
         </div>

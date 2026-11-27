@@ -8,6 +8,7 @@ import React, { Component } from 'react'
 import { replace } from 'connected-react-router'
 
 import {
+  getActiveItineraries,
   getActiveSearch,
   getShowUserSettings
 } from '@otp-react-redux/lib/util/state'
@@ -28,6 +29,7 @@ import * as formActions from '@otp-react-redux/lib/actions/form'
 import NextFlightSuggestion from './next-flight-suggestion'
 import TripFormControls from './trip-form-controls'
 import TripSearchLoading from './trip-search-loading'
+import TripSearchResults from './trip-search-results'
 import { PlanningContext } from '../../context/planning-context'
 
 interface Props {
@@ -36,6 +38,8 @@ interface Props {
   isViewingStop: boolean
   entityId: any
   activeSearch: any
+  activeSearchId: string
+  hasItineraries: boolean
   intl: IntlShape
   mobile?: boolean
   showUserSettings: boolean
@@ -66,7 +70,7 @@ class DestinationPanel extends Component<Props> {
   }
 
   render() {
-    const { activeSearch, intl, mobile } = this.props
+    const { activeSearch, activeSearchId, hasItineraries, intl, mobile } = this.props
     const { planTripClicked } = this.state
     const planningCtx: any = (this as any).context || { isPlanning: false }
     const isPlanning = planningCtx.isPlanning
@@ -95,6 +99,8 @@ class DestinationPanel extends Component<Props> {
         </InvisibleA11yLabel>
         {activeSearch?.pending > 0 ? (
           <TripSearchLoading />
+        ) : activeSearch && hasItineraries ? (
+          <TripSearchResults key={activeSearchId} />
         ) : (
           <>
             <div className="form desktop-trip-form">
@@ -157,7 +163,9 @@ const mapStateToProps = (state: any) => {
     showUserSettings,
     query: state.otp.currentQuery,
     entityId: entityId && decodeURIComponent(entityId),
-    activeSearch: getActiveSearch(state)
+    activeSearch: getActiveSearch(state),
+    activeSearchId: state.otp.activeSearchId,
+    hasItineraries: getActiveItineraries(state).length > 0
   }
 }
 const mapDispatchToProps = {
