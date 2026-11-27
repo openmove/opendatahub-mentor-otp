@@ -258,6 +258,54 @@ modes:
       modes:
         - mode: TRANSIT
 
+    - iconName: bus
+      key: bus
+      label: "Bus"
+      modes:
+        - mode: BUS
+
+    - iconName: tram
+      key: tram
+      label: "Tram"
+      modes:
+        - mode: TRAM
+
+    - iconName: rail
+      key: rail
+      label: "Train"
+      modes:
+        - mode: RAIL
+
+    - iconName: ferry
+      key: ferry
+      label: "Ferry"
+      modes:
+        - mode: FERRY
+
+    - iconName: funicular
+      key: funicular
+      label: "Funicular"
+      modes:
+        - mode: FUNICULAR
+
+    - iconName: gondola
+      key: gondola
+      label: "Cable car"
+      modes:
+        - mode: GONDOLA
+
+    - iconName: subway
+      key: subway
+      label: "Subway"
+      modes:
+        - mode: SUBWAY
+
+    - iconName: airplane
+      key: airplane
+      label: "Airplane"
+      modes:
+        - mode: AIRPLANE
+
     - iconName: bicycle_rent
       key: bikesharing
       modes:
@@ -338,6 +386,8 @@ modes:
     ## Additional modes added here will be visible in the mode selector in the UI.
     ## Modes that are not configured here will never be enabled in requests, so if
     ## your network has subways or ferries be sure they are present here.
+    - mode: FUNICULAR
+      label: Funicular
     - mode: SUBWAY
       label: Subway
     - mode: FERRY
@@ -722,6 +772,14 @@ language:
     otpUi:
       ModeSelector:
         labels:
+          bus: "Bus"
+          tram: "Tram"
+          rail: "Train"
+          ferry: "Ferry"
+          funicular: "Funicular"
+          gondola: "Cable car"
+          subway: "Subway"
+          airplane: "Airplane"
           transit: Transit
           walk: Walk
           bicycle: Bike
@@ -1729,6 +1787,14 @@ language:
         stopViewer: Visualizzatore fermata
       ModeSelector:
         labels:
+          bus: "Autobus"
+          tram: "Tram"
+          rail: "Treno"
+          ferry: "Traghetto"
+          funicular: "Funicolare"
+          gondola: "Funivia"
+          subway: "Metropolitana"
+          airplane: "Aereo"
           bicycle: Bici
           bikesharing: Bike sharing
           car: Auto a noleggio
@@ -2901,6 +2967,14 @@ language:
         stopViewer: Haltestellenanzeige
       ModeSelector:
         labels:
+          bus: "Bus"
+          tram: "Straßenbahn"
+          rail: "Zug"
+          ferry: "Fähre"
+          funicular: "Standseilbahn"
+          gondola: "Seilbahn"
+          subway: "U-Bahn"
+          airplane: "Flugzeug"
           bicycle: Fahrrad
           bikesharing: Bike-Sharing
           car: Mietwagen

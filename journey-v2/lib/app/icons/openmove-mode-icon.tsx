@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 import React from "react";
+import { Wheelchair } from '@styled-icons/fa-solid/Wheelchair'
 
 import {
   Bicycle,
@@ -20,6 +21,9 @@ import {
   Rail,
   Walk
 } from "./";
+import Ferry from './Ferry'
+import Tram from './Tram'
+import { Airplane, CableCar, Subway } from './popup'
 
 function OpenMoveModeIcon({ mode, ...props }) {
   if (!mode) return null;
@@ -46,24 +50,32 @@ function OpenMoveModeIcon({ mode, ...props }) {
       return <Bus {...props} />;
     case "bus":
       return <Bus {...props} />;      
+    case "tram":
+    case "streetcar":
+      return <Tram {...props} />;
     case "walk":
       return <Walk {...props} />;
     case "gondola":
+    case "cable_car":
+      return <CableCar {...props} />;
     case "funicular":
       return <Funicolar {...props} />;
     case "rail":
       return <Rail {...props} />;
+    case "subway":
+      return <Subway {...props} />;
+    case "ferry":
+      return <Ferry {...props} />;
+    case "airplane":
+      return <Airplane {...props} />;
+    case "wheelchair":
+      return <Wheelchair {...props} />;
     case "car":
       return <Car {...props} />;
     case "car_rental":
       return <CarSharing {...props} />;
     case "park_ride":
       return <ParkRide {...props} />;
-    // case "streetcar":
-    //   return <Streetcar {...props} />;
-    // case "subway":
-    // case "tram":
-    //   return <Tram {...props} />;
     default:
       return null;
   }
