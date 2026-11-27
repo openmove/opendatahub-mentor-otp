@@ -27,6 +27,7 @@ import * as formActions from '@otp-react-redux/lib/actions/form'
 
 import NextFlightSuggestion from './next-flight-suggestion'
 import TripFormControls from './trip-form-controls'
+import TripSearchLoading from './trip-search-loading'
 import { PlanningContext } from '../../context/planning-context'
 
 interface Props {
@@ -92,43 +93,49 @@ class DestinationPanel extends Component<Props> {
             <FormattedMessage id="components.BatchSearchScreen.header" />
           </h1>
         </InvisibleA11yLabel>
-        <div className="form desktop-trip-form">
-          <div className="desktop-trip-fields">
-            <LocationField
-              inputPlaceholder={intl.formatMessage(
-                { id: 'common.searchForms.enterStartLocation' },
-                { mapAction }
-              )}
-              isRequired
-              locationType="from"
-              selfValidate={planTripClicked || isPlanning}
-              showClearButton={!mobile}
-            />
-            <LocationField
-              inputPlaceholder={intl.formatMessage(
-                { id: 'common.searchForms.enterDestination' },
-                { mapAction }
-              )}
-              isRequired
-              locationType="to"
-              selfValidate={planTripClicked || isPlanning}
-              showClearButton={!mobile}
-            />
-          </div>
-          <TripFormControls onPlanTripClick={this.handlePlanTripClick} />
-        </div>
+        {activeSearch?.pending > 0 ? (
+          <TripSearchLoading />
+        ) : (
+          <>
+            <div className="form desktop-trip-form">
+              <div className="desktop-trip-fields">
+                <LocationField
+                  inputPlaceholder={intl.formatMessage(
+                    { id: 'common.searchForms.enterStartLocation' },
+                    { mapAction }
+                  )}
+                  isRequired
+                  locationType="from"
+                  selfValidate={planTripClicked || isPlanning}
+                  showClearButton={!mobile}
+                />
+                <LocationField
+                  inputPlaceholder={intl.formatMessage(
+                    { id: 'common.searchForms.enterDestination' },
+                    { mapAction }
+                  )}
+                  isRequired
+                  locationType="to"
+                  selfValidate={planTripClicked || isPlanning}
+                  showClearButton={!mobile}
+                />
+              </div>
+              <TripFormControls onPlanTripClick={this.handlePlanTripClick} />
+            </div>
 
-        {activeSearch && (
-          <div
-            className="desktop-narrative-container"
-            style={{
-              flexGrow: 1,
-              overflowY: 'hidden'
-            }}
-          >
-            <NextFlightSuggestion />
-            <NarrativeItineraries />
-          </div>
+            {activeSearch && (
+              <div
+                className="desktop-narrative-container"
+                style={{
+                  flexGrow: 1,
+                  overflowY: 'hidden'
+                }}
+              >
+                <NextFlightSuggestion />
+                <NarrativeItineraries />
+              </div>
+            )}
+          </>
         )}
       </ViewerContainer>
     )

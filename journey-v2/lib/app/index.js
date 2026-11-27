@@ -30,7 +30,7 @@ import ViewerContainer from '@otp-react-redux/lib/components/viewers/viewer-cont
 // import ResponsiveWebapp from '@otp-react-redux/lib/components/app/responsive-webapp'
 import AppMenu from '@otp-react-redux/lib/components/app/app-menu'
 import DesktopNav from '@otp-react-redux/lib/components/app/desktop-nav'
-import BatchResultsScreen from '@otp-react-redux/lib/components/mobile/batch-results-screen'
+import BatchResultsScreen from './components/mobile/batch-results-screen'
 // Local copy of the vendor screen: it adds the Figma bottom panel chevron.
 import BatchSearchScreen from './components/mobile/batch-search-screen'
 import FormattedMode from '@otp-react-redux/lib/components/util/formatted-mode'

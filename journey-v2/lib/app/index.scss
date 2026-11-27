@@ -867,6 +867,50 @@ $mobile-welcome-panel-height: 164px;
   }
 }
 
+.trip-search-loading {
+  align-items: center;
+  color: #4e702d;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-family: 'Source Sans 3', 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+  gap: 20px;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.trip-search-loading-icon {
+  align-items: center;
+  display: grid;
+  height: 96px;
+  justify-items: center;
+  position: relative;
+  width: 96px;
+
+  &::before {
+    animation: trip-search-spin 1s linear infinite;
+    border: 2px solid #ebf0e8;
+    border-radius: 50%;
+    border-right-color: currentColor;
+    border-top-color: currentColor;
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+}
+
+@keyframes trip-search-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trip-search-loading-icon::before {
+    animation: none;
+  }
+}
+
 /* Chevron at the top of the mobile bottom panel (Figma: 29x28, centred, 5px
    from the top). It collapses / expands the panel. */
 @media only screen and (max-width: 768px) {
@@ -879,6 +923,30 @@ $mobile-welcome-panel-height: 164px;
     margin: 0 auto;
     padding: 0;
     width: 29px;
+  }
+
+  .otp.mobile main.mobile-trip-search-loading {
+    display: flex;
+    flex-direction: column;
+    inset: 0;
+    position: fixed;
+  }
+
+  .mobile-trip-search-loading-panel {
+    background: #fff;
+    border-top: 1px solid #e3e4e7;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom);
+
+    &:has([aria-expanded='true']) {
+      flex: 0 0 66%;
+    }
+
+    > div:not([hidden]) {
+      display: flex;
+      flex: 1;
+    }
   }
 
   /* TRIP / NEARBY bar from the Figma "Navigation tab": 106x56, white, 1px
@@ -895,7 +963,7 @@ $mobile-welcome-panel-height: 164px;
     z-index: 999;
   }
 
-  body:has(.otp.mobile .mobile-trip-form--expanded) .mobile-view-switcher {
+  body:has(.otp.mobile :is(.mobile-trip-form--expanded, .mobile-trip-search-loading)) .mobile-view-switcher {
     display: none;
   }
 

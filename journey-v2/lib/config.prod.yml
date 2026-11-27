@@ -710,6 +710,8 @@ language:
       modes:
         airplane: Airplane
     components:
+      TripSearchLoading:
+        message: "We're looking for the best options..."
       TripCalendar:
         today: "Today"
         dateTime: "Date and time"
@@ -976,6 +978,8 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      TripSearchLoading:
+        message: "Stiamo cercando le opzioni migliori..."
       TripCalendar:
         today: "Oggi"
         dateTime: "Data e ora"
@@ -2139,6 +2143,8 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      TripSearchLoading:
+        message: "Wir suchen nach den besten Optionen..."
       TripCalendar:
         today: "Heute"
         dateTime: "Datum und Uhrzeit"
