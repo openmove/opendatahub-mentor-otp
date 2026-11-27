@@ -207,6 +207,15 @@ module.exports = {
             )
           }
         ),
+        // Extend the upstream itinerary ordering without editing the submodule.
+        new webpack.NormalModuleReplacementPlugin(
+          /^\.\.\/(\.\.\/util\/state|util\/sortOptions)$/,
+          (resource) => {
+            if (!resource.context.includes('otp-react-redux') ||
+                !resource.context.endsWith(path.join('components', 'narrative'))) return
+            resource.request = path.resolve(__dirname, 'lib/app/util/itinerary-sort')
+          }
+        ),
         // Use the local mobile header so the entire back button is actionable.
         new webpack.NormalModuleReplacementPlugin(
           /(^|\/)navigation-bar$/,

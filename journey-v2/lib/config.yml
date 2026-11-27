@@ -528,7 +528,7 @@ itinerary:
   showInlineItinerarySummary: false
   # The sort option to use by default
   # Available sort options: 'BEST', 'DURATION', 'ARRIVALTIME', 'WALKTIME', 'COST', 'DEPARTURETIME'
-  # defaultSort: "BEST" # Default
+  defaultSort: "DURATION"
   # The sort options to display in the sort options list
   # If unset, will display all.
   # Available sort options: 'BEST', 'DURATION', 'ARRIVALTIME', 'WALKTIME', 'COST', 'DEPARTURETIME'
@@ -733,6 +733,9 @@ language:
         increaseMinute: "Increase minutes"
         confirm: "OK"
       DesktopTrip:
+        routeOrder: "Route order"
+        fewestTransfers: "Less interchanges"
+        leastWalking: "Shortest walking legs"
         addStop: "Add a stop"
         fastest: "Fastest route"
         direct: "Single-vehicle solutions"
@@ -997,6 +1000,9 @@ language:
         increaseMinute: "Aumenta minuti"
         confirm: "OK"
       DesktopTrip:
+        routeOrder: "Ordina percorsi"
+        fewestTransfers: "Meno cambi"
+        leastWalking: "Meno tempo a piedi"
         addStop: "Aggiungi una fermata"
         fastest: "Percorso più veloce"
         direct: "Soluzioni con un solo mezzo"
@@ -2157,6 +2163,9 @@ language:
         increaseMinute: "Minuten vor"
         confirm: "OK"
       DesktopTrip:
+        routeOrder: "Verbindungen sortieren"
+        fewestTransfers: "Weniger Umstiege"
+        leastWalking: "Kürzere Gehzeit"
         addStop: "Stopp hinzufügen"
         fastest: "Schnellste Route"
         direct: "Verbindungen ohne Umstieg"

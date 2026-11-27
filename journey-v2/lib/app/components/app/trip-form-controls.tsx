@@ -1,10 +1,11 @@
-import { Award, ChevronDown, Plus } from '@styled-icons/fa-solid'
+import { Plus } from '@styled-icons/fa-solid'
 import { FormattedMessage, useIntl } from 'react-intl'
 import React from 'react'
 
 import BatchSettings from '@otp-react-redux/lib/components/form/batch-settings'
 import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
 import TripCalendar from './trip-calendar'
+import TripSortMenu from './trip-sort-menu'
 
 export default function TripFormControls({ onPlanTripClick }: { onPlanTripClick: () => void }) {
   const intl = useIntl()
@@ -30,11 +31,7 @@ export default function TripFormControls({ onPlanTripClick }: { onPlanTripClick:
         <div className="trip-form-batch">
           <BatchSettings onPlanTripClick={onPlanTripClick} />
         </div>
-        <button type="button" className="trip-form-optimization" disabled>
-          <Award size={16} aria-hidden />
-          <FormattedMessage id="components.DesktopTrip.fastest" />
-          <ChevronDown size={12} aria-hidden />
-        </button>
+        <TripSortMenu />
         <label className="trip-form-direct">
           <FormattedMessage id="components.DesktopTrip.direct" />
           <input type="checkbox" role="switch" disabled />
