@@ -1096,10 +1096,13 @@ $mobile-welcome-panel-height: 164px;
   }
 
   .trip-form-batch > div > span {
+    display: none;
+  }
+
+  .trip-form-calendar {
     grid-row: 1;
   }
 
-  #date-time-button,
   .trip-form-optimization {
     width: 100%;
     min-height: 44px;
@@ -1178,6 +1181,10 @@ $mobile-welcome-panel-height: 164px;
     border-color: #4e702d;
     background: #ebf0e8;
     color: #4e702d;
+
+    > svg {
+      color: inherit;
+    }
   }
 
   .trip-form-direct {
@@ -1218,6 +1225,144 @@ $mobile-welcome-panel-height: 164px;
     &::after {
       content: var(--trip-form-search-label);
     }
+  }
+}
+
+.trip-calendar-trigger {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid #e1e2e4;
+  background: #fff;
+  color: #000;
+  text-align: left;
+}
+
+.trip-calendar {
+  width: calc(100vw - 32px);
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  z-index: 995;
+  padding: 8px;
+  border: 1px solid #e1e2e4;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  color: #000;
+  font: 14px/20px 'Source Sans 3', 'Source Sans Pro', sans-serif;
+
+  button {
+    border: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  &__mode {
+    width: 100%;
+    min-height: 32px;
+    padding-inline: 8px;
+    border: 1px solid #e1e2e4;
+    border-radius: 4px;
+    background: #fff;
+    font: inherit;
+  }
+
+  &__month,
+  &__footer,
+  &__time,
+  &__time > div {
+    display: flex;
+    align-items: center;
+  }
+
+  &__month {
+    justify-content: space-between;
+    text-align: center;
+
+    button {
+      flex: 0 0 32px;
+      min-height: 32px;
+    }
+  }
+
+  &__days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    justify-items: center;
+    row-gap: 2px;
+    text-align: center;
+
+    > span {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    button {
+      width: 32px;
+      max-width: 100%;
+      min-height: 32px;
+      border-radius: 50%;
+    }
+
+    button[aria-pressed='true'] {
+      background: #4e702d;
+      color: #fff;
+    }
+  }
+
+  &__footer {
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  &__time {
+    flex: 1;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 4px;
+    border: 1px solid #e1e2e4;
+    border-radius: 4px;
+
+    button {
+      width: 24px;
+      min-height: 32px;
+      padding: 0;
+    }
+
+    input {
+      width: 26px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      text-align: center;
+    }
+  }
+
+  button.trip-calendar__confirm {
+    min-width: 48px;
+    min-height: 44px;
+    padding: 0 8px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    font-weight: 600;
+
+    &:disabled {
+      border-color: #e1e2e4;
+      color: #666;
+    }
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #4e702d;
+    outline-offset: -2px;
   }
 }
 

@@ -660,6 +660,18 @@ language:
       modes:
         airplane: Airplane
     components:
+      TripCalendar:
+        today: "Today"
+        dateTime: "Date and time"
+        previousMonth: "Previous month"
+        nextMonth: "Next month"
+        hour: "Hour"
+        minute: "Minute"
+        decreaseHour: "Decrease hour"
+        increaseHour: "Increase hour"
+        decreaseMinute: "Decrease minutes"
+        increaseMinute: "Increase minutes"
+        confirm: "OK"
       DesktopTrip:
         addStop: "Add a stop"
         fastest: "Fastest route"
@@ -900,6 +912,18 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      TripCalendar:
+        today: "Oggi"
+        dateTime: "Data e ora"
+        previousMonth: "Mese precedente"
+        nextMonth: "Mese successivo"
+        hour: "Ora"
+        minute: "Minuti"
+        decreaseHour: "Diminuisci ora"
+        increaseHour: "Aumenta ora"
+        decreaseMinute: "Diminuisci minuti"
+        increaseMinute: "Aumenta minuti"
+        confirm: "OK"
       DesktopTrip:
         addStop: "Aggiungi una fermata"
         fastest: "Percorso più veloce"
@@ -2037,6 +2061,18 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      TripCalendar:
+        today: "Heute"
+        dateTime: "Datum und Uhrzeit"
+        previousMonth: "Vorheriger Monat"
+        nextMonth: "Nächster Monat"
+        hour: "Stunde"
+        minute: "Minute"
+        decreaseHour: "Stunde zurück"
+        increaseHour: "Stunde vor"
+        decreaseMinute: "Minuten zurück"
+        increaseMinute: "Minuten vor"
+        confirm: "OK"
       DesktopTrip:
         addStop: "Stopp hinzufügen"
         fastest: "Schnellste Route"

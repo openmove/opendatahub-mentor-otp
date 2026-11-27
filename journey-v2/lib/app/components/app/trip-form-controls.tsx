@@ -4,6 +4,7 @@ import React from 'react'
 
 import BatchSettings from '@otp-react-redux/lib/components/form/batch-settings'
 import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
+import TripCalendar from './trip-calendar'
 
 export default function TripFormControls({ onPlanTripClick }: { onPlanTripClick: () => void }) {
   const intl = useIntl()
@@ -25,6 +26,7 @@ export default function TripFormControls({ onPlanTripClick }: { onPlanTripClick:
           )
         } as React.CSSProperties}
       >
+        <TripCalendar />
         <div className="trip-form-batch">
           <BatchSettings onPlanTripClick={onPlanTripClick} />
         </div>
