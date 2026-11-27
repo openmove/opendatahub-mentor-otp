@@ -216,6 +216,14 @@ module.exports = {
             resource.request = path.resolve(__dirname, 'lib/app/util/itinerary-sort')
           }
         ),
+        new webpack.NormalModuleReplacementPlugin(
+          /^\.\/narrative-itineraries-header$/,
+          (resource) => {
+            if (!resource.context.includes('otp-react-redux') ||
+                !resource.context.endsWith(path.join('components', 'narrative'))) return
+            resource.request = path.resolve(__dirname, 'lib/app/components/app/trip-results-header')
+          }
+        ),
         // Use the local mobile header so the entire back button is actionable.
         new webpack.NormalModuleReplacementPlugin(
           /(^|\/)navigation-bar$/,

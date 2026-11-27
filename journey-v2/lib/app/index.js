@@ -40,7 +40,7 @@ import { clearLocation } from '@otp-react-redux/lib/actions/form'
 import { setLocationToCurrent, setMapCenter } from '@otp-react-redux/lib/actions/map'
 import { findNearbyStops } from '@otp-react-redux/lib/actions/api'
 import createCallTakerReducer from '@otp-react-redux/lib/reducers/call-taker'
-import createOtpReducer from '@otp-react-redux/lib/reducers/create-otp-reducer'
+import createVendorOtpReducer from '@otp-react-redux/lib/reducers/create-otp-reducer'
 import createUserReducer from '@otp-react-redux/lib/reducers/create-user-reducer'
 import otpUtils from '@otp-react-redux/lib/util'
 
@@ -55,6 +55,24 @@ import ExampleComponent from './components/example'
 // TODO: Remove this when we fix the configs for calltaker.
 const MobileResultsScreen = BatchResultsScreen
 const MobileSearchScreen = BatchSearchScreen
+
+function createOtpReducer(config) {
+  const reduce = createVendorOtpReducer(config)
+  return (state, action) => {
+    if (
+      action.type === 'UPDATE_ITINERARY_FILTER' &&
+      state?.filter?.singleVehicleOnly !== undefined &&
+      action.payload?.singleVehicleOnly === undefined
+    ) {
+      return reduce(state, {
+        ...action,
+        payload: { ...action.payload, singleVehicleOnly: state.filter.singleVehicleOnly }
+      })
+    }
+    return reduce(state, action)
+  }
+}
+
 export {
   // form components
   DateTimeModal,

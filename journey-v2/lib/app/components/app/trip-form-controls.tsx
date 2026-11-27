@@ -4,6 +4,7 @@ import React from 'react'
 
 import BatchSettings from '@otp-react-redux/lib/components/form/batch-settings'
 import SwitchButton from '@otp-react-redux/lib/components/form/switch-button'
+import SingleVehicleToggle from './single-vehicle-toggle'
 import TripCalendar from './trip-calendar'
 import TripSortMenu from './trip-sort-menu'
 
@@ -32,10 +33,7 @@ export default function TripFormControls({ onPlanTripClick }: { onPlanTripClick:
           <BatchSettings onPlanTripClick={onPlanTripClick} />
         </div>
         <TripSortMenu />
-        <label className="trip-form-direct">
-          <FormattedMessage id="components.DesktopTrip.direct" />
-          <input type="checkbox" role="switch" disabled />
-        </label>
+        <SingleVehicleToggle />
       </div>
     </div>
   )

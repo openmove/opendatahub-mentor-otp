@@ -1186,24 +1186,8 @@ $mobile-welcome-panel-height: 164px;
   }
 
   .trip-form-direct {
-    display: flex;
     grid-row: 4;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
     margin-bottom: 16px;
-    color: #666;
-    font-weight: 400;
-
-    input {
-      appearance: none;
-      width: 36px;
-      height: 20px;
-      margin: 0;
-      border: 1px solid #e1e2e4;
-      border-radius: 12px;
-      background: radial-gradient(circle, #666 0 5px, transparent 6px) left 2px center / 14px 14px no-repeat #fff;
-    }
   }
 
   #plan-trip {
@@ -1224,6 +1208,53 @@ $mobile-welcome-panel-height: 164px;
       content: var(--trip-form-search-label);
     }
   }
+}
+
+.trip-form-direct {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  min-height: 40px;
+  color: #000;
+  font-weight: 400;
+
+  input[type='checkbox'] {
+    appearance: none;
+    flex: 0 0 36px;
+    height: 20px;
+    margin: 0;
+    border: 1px solid #e1e2e4;
+    border-radius: 12px;
+    background: radial-gradient(circle, #000 0 5px, transparent 6px) left 2px center / 14px 14px no-repeat #fff;
+    cursor: pointer;
+
+    &:checked {
+      border-color: #4e702d;
+      background: radial-gradient(circle, #4e702d 0 5px, transparent 6px) right 2px center / 14px 14px no-repeat #ebf0e8;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #4e702d;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+  }
+}
+
+.mobile-trip-results-filter {
+  display: none;
+}
+
+.otp.mobile .mobile-trip-results-filter {
+  display: block;
+  padding: 0 16px;
+  background: #fff;
 }
 
 .trip-calendar-trigger {

@@ -763,6 +763,9 @@ language:
         confirmDesktop: Confirm choice
         progress: Step 1 of 3
       OTP2ErrorRenderer:
+        NO_SINGLE_VEHICLE_ROUTE:
+          header: "No single-vehicle routes"
+          body: "Turn off Single-vehicle solutions to show all routes found."
         NO_DIRECT_MODE_CONNECTION:
           header: No route found
           body: >-
@@ -1226,6 +1229,9 @@ language:
           notifiche push.
         notificationChannelPrompt: "Ricevi notifiche sui viaggi salvati tramite:"
       OTP2ErrorRenderer:
+        NO_SINGLE_VEHICLE_ROUTE:
+          header: "Nessun percorso con un solo mezzo"
+          body: "Disattiva Soluzioni con un solo mezzo per vedere tutti i percorsi trovati."
         LOCATION_NOT_FOUND:
           body: "{inputFields} {inputFieldsCount, plural, =0 {} one {la posizione non è}
             other {le posizioni non sono}} vicino a strade percorribili."
@@ -2387,6 +2393,9 @@ language:
           Push-Benachrichtigungen zu erhalten.
         notificationChannelPrompt: "Erhalte Benachrichtigungen zu gespeicherten Reisen über:"
       OTP2ErrorRenderer:
+        NO_SINGLE_VEHICLE_ROUTE:
+          header: "Keine Verbindung mit nur einem Verkehrsmittel"
+          body: "Deaktiviere die Option, um alle gefundenen Verbindungen anzuzeigen."
         LOCATION_NOT_FOUND:
           body: "{inputFields} {inputFieldsCount, plural, =0 {} one {der Standort
             liegt nicht} other {die Standorte liegen nicht}} in der Nähe befahrbarer
