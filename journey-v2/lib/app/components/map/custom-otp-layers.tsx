@@ -468,21 +468,22 @@ const OTPVectorLayer = ({ sourceLayerName, layerStyle = {}, name, setViewedStop,
         });
       }
     }
+    // No getLayer() check here: MapLibre's layer listeners already look the
+    // layer up on every event, so they can be attached before the layer
+    // exists. With the check, a listener attached too early was never added,
+    // and on the reused map (welcome screen -> search form on mobile) the
+    // stops stayed without a click handler.
     function setEvent(layerId) {
-      if (mapInstance.getLayer(layerId)) {
-        mapInstance.on('mouseenter', layerId, onMouseEnter)
-        mapInstance.on('mouseleave', layerId, onMouseLeave)
-        mapInstance.on('click', layerId, onClick)
-      }
+      mapInstance.on('mouseenter', layerId, onMouseEnter)
+      mapInstance.on('mouseleave', layerId, onMouseLeave)
+      mapInstance.on('click', layerId, onClick)
       /**/
     }
 
     function removeEvent(layerId) {
-      if (mapInstance.getLayer(layerId)) {
-        mapInstance.off('mouseenter', layerId, onMouseEnter)
-        mapInstance.off('mouseleave', layerId, onMouseLeave)
-        mapInstance.off('click', layerId, onClick)
-      }
+      mapInstance.off('mouseenter', layerId, onMouseEnter)
+      mapInstance.off('mouseleave', layerId, onMouseLeave)
+      mapInstance.off('click', layerId, onClick)
     }
 
     const styleDataHandler = () => {
@@ -498,7 +499,10 @@ const OTPVectorLayer = ({ sourceLayerName, layerStyle = {}, name, setViewedStop,
 
 
     mapInstance.on('styledata', styleDataHandler)
-    
+    // A reused map has its style already loaded, so styledata may not fire
+    // again for this mount: attach the listeners now too.
+    styleDataHandler()
+
     return () => {
       removeEvent(layerId);
       mapInstance.off('styledata', styleDataHandler)
