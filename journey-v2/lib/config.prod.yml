@@ -710,6 +710,21 @@ language:
       modes:
         airplane: Airplane
     components:
+      TripDetail:
+        book: "Book via app"
+        close: "Back to options"
+        copied: "Link copied"
+        copyFailed: "Could not copy the link"
+        delay: "Delay +{minutes} min"
+        directions: "Directions"
+        download: "Download PDF"
+        go: "Let’s go together"
+        onTime: "On time"
+        option: "Option"
+        restart: "Restart"
+        share: "Share link"
+        stops: "View stops ({count})"
+        tickets: "Tickets info"
       TripSearchResults:
         arrival: "Arrival {time}"
         back: "Back to search"
@@ -997,6 +1012,21 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# h }}{minutes} min { seconds,
           plural, =0 {} other {# sec}}"
     components:
+      TripDetail:
+        book: "Prenota via app"
+        close: "Torna alle opzioni"
+        copied: "Link copiato"
+        copyFailed: "Impossibile copiare il link"
+        delay: "Ritardo +{minutes} min"
+        directions: "Indicazioni"
+        download: "Scarica PDF"
+        go: "Andiamo insieme"
+        onTime: "In orario"
+        option: "Opzione"
+        restart: "Ricomincia"
+        share: "Condividi link"
+        stops: "Vedi fermate ({count})"
+        tickets: "Info biglietti"
       TripSearchResults:
         arrival: "Arrivo {time}"
         back: "Torna alla ricerca"
@@ -2181,6 +2211,21 @@ language:
         tripDurationFormat: "{hours, plural, =0 {} other {# Std }}{minutes} Min {
           seconds, plural, =0 {} other {# Sek}}"
     components:
+      TripDetail:
+        book: "Per App buchen"
+        close: "Zurück zu den Optionen"
+        copied: "Link kopiert"
+        copyFailed: "Link konnte nicht kopiert werden"
+        delay: "Verspätung +{minutes} Min."
+        directions: "Wegbeschreibung"
+        download: "PDF herunterladen"
+        go: "Gemeinsam losfahren"
+        onTime: "Pünktlich"
+        option: "Option"
+        restart: "Neu starten"
+        share: "Link teilen"
+        stops: "Haltestellen anzeigen ({count})"
+        tickets: "Ticketinfos"
       TripSearchResults:
         arrival: "Ankunft {time}"
         back: "Zurück zur Suche"

@@ -8,13 +8,16 @@ import { useIntl } from 'react-intl'
 import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react'
 
-import { clearActiveSearch } from '@otp-react-redux/lib/actions/form'
+import { clearActiveSearch, resetForm } from '@otp-react-redux/lib/actions/form'
 import {
   setActiveItinerary,
   setActiveLeg
 } from '@otp-react-redux/lib/actions/narrative'
-import { showMobileSearchScreen } from '@otp-react-redux/lib/actions/ui'
-import ItineraryBody from '@otp-react-redux/lib/components/narrative/line-itin/connected-itinerary-body'
+import {
+  setMobileScreen,
+  showMobileSearchScreen
+} from '@otp-react-redux/lib/actions/ui'
+import { MobileScreens } from '@otp-react-redux/lib/actions/ui-constants'
 import FormattedDuration from '@otp-react-redux/lib/components/util/formatted-duration'
 import {
   getActiveItineraries,
@@ -25,6 +28,7 @@ import {
 
 import OpenMoveModeIcon from '../../icons/openmove-mode-icon'
 import NextFlightSuggestion from './next-flight-suggestion'
+import TripDetail, { getTripOptionKey } from './trip-detail'
 
 const messages = {
   arrival: 'Arrival {time}',
@@ -132,7 +136,18 @@ export default function TripSearchResults({ mobile = false }) {
   const config = useSelector((state) => state.otp.config)
   const [filters, setFilters] = useState([])
   const [sort, setSort] = useState('BEST')
-  const [detailedIndex, setDetailedIndex] = useState(null)
+  const searchId = useSelector((state) => state.otp.activeSearchId)
+  const [detailedIndex, setDetailedIndex] = useState(() => {
+    const option = coreUtils.query.getUrlParams().ui_tripOption
+    const prefix = `${searchId}:`
+    if (typeof option !== 'string' || !option.startsWith(prefix)) return null
+    return (
+      itineraries.find(
+        (itinerary) =>
+          getTripOptionKey(itinerary) === option.slice(prefix.length)
+      )?.index ?? null
+    )
+  })
   const { from, to, date, time, departArrive } = search.query || {}
   const timeZone = config.homeTimezone
   const modes = [...new Set(itineraries.flatMap(getModes))]
@@ -145,7 +160,7 @@ export default function TripSearchResults({ mobile = false }) {
   const selected = visible.find(
     (itinerary) => itinerary.index === search.activeItinerary
   )
-  const selectedIndex = selected?.index ?? visible[0]?.index
+  const selectedIndex = detailedIndex ?? selected?.index ?? visible[0]?.index
   const detailed = visible.find(
     (itinerary) => itinerary.index === detailedIndex
   )
@@ -171,6 +186,10 @@ export default function TripSearchResults({ mobile = false }) {
   }
   const edit = () =>
     dispatch(mobile ? showMobileSearchScreen() : clearActiveSearch())
+  const restart = () => {
+    dispatch(resetForm(true))
+    if (mobile) dispatch(setMobileScreen(MobileScreens.WELCOME_SCREEN))
+  }
   const text = (id, values) => formatResult(intl, id, values)
   const queryTime = date && time && Date.parse(`${date}T${time}Z`)
   const schedule =
@@ -184,160 +203,158 @@ export default function TripSearchResults({ mobile = false }) {
         intl.formatTime(queryTime, { timeZone: 'UTC' })
       : text('leaveNow')
 
+  const route = [from?.name, to?.name].filter(Boolean).join(' → ')
+  if (detailed) {
+    return (
+      <TripDetail
+        carbon={formatCarbon(intl, detailed, config.co2)}
+        formatResult={text}
+        itinerary={detailed}
+        mobile={mobile}
+        onClose={closeDetails}
+        onRestart={restart}
+        route={route}
+        schedule={schedule}
+        timeZone={timeZone}
+      />
+    )
+  }
+
   return (
     <section aria-label={text('options')} className="trip-search-results">
       <div className="trip-results-heading">
-        <button
-          aria-label={text(detailed ? 'options' : 'back')}
-          onClick={detailed ? closeDetails : edit}
-          type="button"
-        >
+        <button aria-label={text('back')} onClick={edit} type="button">
           <span aria-hidden="true">‹</span>
         </button>
         <div>
-          <div className="trip-results-route">
-            {from?.name} → {to?.name}
-          </div>
+          <div className="trip-results-route">{route}</div>
           <button className="trip-results-edit" onClick={edit} type="button">
             {schedule} <span aria-hidden="true">✎</span>
             <span className="sr-only"> {text('edit')}</span>
           </button>
         </div>
-        {!detailed && (
-          <label className="trip-results-sort">
-            <SortAmountDown aria-hidden="true" size={18} />
-            <select
-              aria-label={text('sort')}
-              onChange={(event) => setSort(event.target.value)}
-              value={sort}
-            >
-              {Object.entries(sortLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {text(label)}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-      </div>
-      {detailed ? (
-        <ItineraryBody
-          itinerary={detailed}
-          setActiveLeg={(index, leg) => dispatch(setActiveLeg({ index, leg }))}
-        />
-      ) : (
-        <>
-          <div
-            aria-label={text('modes')}
-            className="trip-results-modes"
-            role="group"
+        <label className="trip-results-sort">
+          <SortAmountDown aria-hidden="true" size={18} />
+          <select
+            aria-label={text('sort')}
+            onChange={(event) => setSort(event.target.value)}
+            value={sort}
           >
-            {modes.map((mode) => {
-              const label =
-                config.modes?.modeButtons?.find((button) => button.key === mode)
-                  ?.label || mode
-              return (
-                <button
-                  aria-pressed={filters.includes(mode)}
-                  key={mode}
-                  onClick={() =>
-                    setFilters((current) =>
-                      current.includes(mode)
-                        ? current.filter((value) => value !== mode)
-                        : [...current, mode]
-                    )
-                  }
-                  type="button"
-                >
-                  <ModeIcon mode={mode} />
-                  {intl.formatMessage({
-                    defaultMessage: label,
-                    id: `components.ModeSelector.labels.${mode}`
-                  })}
-                </button>
-              )
-            })}
-          </div>
-          <NextFlightSuggestion />
-          <ul className="trip-results-list">
-            {visible.map((itinerary) => {
-              const { index, legs, duration, startTime, endTime } = itinerary
-              const stops = legs.reduce(
-                (sum, leg) => sum + (leg.intermediateStops?.length || 0),
-                0
-              )
-              const { caloriesBurned } =
-                coreUtils.itinerary.calculatePhysicalActivity(itinerary)
-              return (
-                <li
-                  className={
-                    index === selectedIndex ? 'is-selected' : undefined
-                  }
-                  key={index}
-                >
-                  <button
-                    aria-pressed={index === selectedIndex}
-                    className="trip-results-option"
-                    onClick={() => select(index)}
-                    type="button"
-                  >
-                    <ModeIcon mode={getMainMode(itinerary)} />
-                    <span className="trip-results-option-body">
-                      <span className="trip-results-option-column">
-                        <strong>
-                          {text('departure', {
-                            time: intl.formatTime(startTime, { timeZone })
-                          })}
-                        </strong>
-                        <strong>
-                          {text('arrival', {
-                            time: intl.formatTime(endTime, { timeZone })
-                          })}
-                        </strong>
-                        <span>
-                          {text('duration')}{' '}
-                          <FormattedDuration
-                            duration={duration}
-                            includeSeconds={false}
-                          />
-                        </span>
-                      </span>
-                      <span className="trip-results-option-column">
-                        {stops > 0 && (
-                          <span>{text('stops', { count: stops })}</span>
-                        )}
-                        {caloriesBurned > 0 && (
-                          <span>
-                            {text('calories', {
-                              count: Math.round(caloriesBurned)
-                            })}
-                          </span>
-                        )}
-                        <span>{formatCarbon(intl, itinerary, config.co2)}</span>
-                      </span>
-                    </span>
-                  </button>
-                  <button
-                    className="trip-results-details"
-                    onClick={() => {
-                      select(index)
-                      setDetailedIndex(index)
-                    }}
-                    type="button"
-                  >
-                    {text('details')}
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-          <div className="trip-results-footer">
-            <button disabled type="button">
-              {text('verify')}
+            {Object.entries(sortLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {text(label)}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div
+        aria-label={text('modes')}
+        className="trip-results-modes"
+        role="group"
+      >
+        {modes.map((mode) => {
+          const label =
+            config.modes?.modeButtons?.find((button) => button.key === mode)
+              ?.label || mode
+          return (
+            <button
+              aria-pressed={filters.includes(mode)}
+              key={mode}
+              onClick={() =>
+                setFilters((current) =>
+                  current.includes(mode)
+                    ? current.filter((value) => value !== mode)
+                    : [...current, mode]
+                )
+              }
+              type="button"
+            >
+              <ModeIcon mode={mode} />
+              {intl.formatMessage({
+                defaultMessage: label,
+                id: `components.ModeSelector.labels.${mode}`
+              })}
             </button>
-          </div>
-        </>
-      )}
+          )
+        })}
+      </div>
+      <NextFlightSuggestion />
+      <ul className="trip-results-list">
+        {visible.map((itinerary) => {
+          const { index, legs, duration, startTime, endTime } = itinerary
+          const stops = legs.reduce(
+            (sum, leg) => sum + (leg.intermediateStops?.length || 0),
+            0
+          )
+          const { caloriesBurned } =
+            coreUtils.itinerary.calculatePhysicalActivity(itinerary)
+          return (
+            <li
+              className={index === selectedIndex ? 'is-selected' : undefined}
+              key={index}
+            >
+              <button
+                aria-pressed={index === selectedIndex}
+                className="trip-results-option"
+                onClick={() => select(index)}
+                type="button"
+              >
+                <ModeIcon mode={getMainMode(itinerary)} />
+                <span className="trip-results-option-body">
+                  <span className="trip-results-option-column">
+                    <strong>
+                      {text('departure', {
+                        time: intl.formatTime(startTime, { timeZone })
+                      })}
+                    </strong>
+                    <strong>
+                      {text('arrival', {
+                        time: intl.formatTime(endTime, { timeZone })
+                      })}
+                    </strong>
+                    <span>
+                      {text('duration')}{' '}
+                      <FormattedDuration
+                        duration={duration}
+                        includeSeconds={false}
+                      />
+                    </span>
+                  </span>
+                  <span className="trip-results-option-column">
+                    {stops > 0 && (
+                      <span>{text('stops', { count: stops })}</span>
+                    )}
+                    {caloriesBurned > 0 && (
+                      <span>
+                        {text('calories', {
+                          count: Math.round(caloriesBurned)
+                        })}
+                      </span>
+                    )}
+                    <span>{formatCarbon(intl, itinerary, config.co2)}</span>
+                  </span>
+                </span>
+              </button>
+              <button
+                className="trip-results-details"
+                onClick={() => {
+                  select(index)
+                  setDetailedIndex(index)
+                }}
+                type="button"
+              >
+                {text('details')}
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+      <div className="trip-results-footer">
+        <button disabled type="button">
+          {text('verify')}
+        </button>
+      </div>
     </section>
   )
 }
